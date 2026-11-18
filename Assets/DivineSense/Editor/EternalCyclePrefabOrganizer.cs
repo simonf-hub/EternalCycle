@@ -33,7 +33,7 @@ namespace DivineSenseEditor
             foreach (var player in session.Registry.Players)
                 if (!PrefabUtility.IsPartOfPrefabInstance(player))
                     throw new InvalidOperationException("Player is not linked to its prefab.");
-            Debug.Log("ETERNAL_CYCLE_PREFABS_OK: linked players, background, four god pickups and preserved asset GUIDs.");
+            Debug.Log("ETERNAL_CYCLE_PREFABS_OK: linked players, background, six god pickups and preserved asset GUIDs.");
         }
 
         private static void Connect(GameObject instance, string path)
@@ -72,6 +72,8 @@ namespace DivineSenseEditor
             settings.DemeterPickupPrefab = CreatePickup(settings, GodKind.Demeter);
             settings.AthenaPickupPrefab = CreatePickup(settings, GodKind.Athena);
             settings.DionysusPickupPrefab = CreatePickup(settings, GodKind.Dionysus);
+            settings.PoseidonPickupPrefab = CreatePickup(settings, GodKind.Poseidon);
+            settings.AresPickupPrefab = CreatePickup(settings, GodKind.Ares);
             EditorUtility.SetDirty(settings);
         }
 
@@ -82,10 +84,9 @@ namespace DivineSenseEditor
             if (existing) return existing;
             // Variants inherit shared pickup behavior while allowing individual artwork.
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(settings.GodPickupPrefab);
-            instance.name = kind + " Pickup";
-            instance.GetComponent<GodPickup>().Kind = kind;
-            var label = instance.GetComponentInChildren<TextMesh>();
-            if (label) label.text = kind.ToString();
+            var pickup = instance.GetComponent<GodPickup>();
+            pickup.Kind = kind;
+            pickup.RefreshAppearance();
             var saved = PrefabUtility.SaveAsPrefabAsset(instance, path);
             UnityEngine.Object.DestroyImmediate(instance);
             return saved;

@@ -1,4 +1,6 @@
 using System;
+using EternalCycle;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace MicroSense
@@ -31,19 +33,36 @@ namespace MicroSense
 
         public float ReadHorizontal()
         {
-            return ReadAxis(Left, Right);
+            float keyboard=ReadAxis(Left, Right);
+            float controller=ControllerDirection.x;
+            return Mathf.Abs(controller)>Mathf.Abs(keyboard)?controller:keyboard;
         }
 
         public float ReadVertical()
         {
-            return ReadAxis(Down, Up);
+            float keyboard=ReadAxis(Down, Up);
+            float controller=ControllerDirection.y;
+            return Mathf.Abs(controller)>Mathf.Abs(keyboard)?controller:keyboard;
         }
 
-        public bool UpPressedThisFrame => WasPressedThisFrame(Up);
+        private LocalController Controller => LocalGamepads.ForPlayer(Left == Key.LeftArrow ? 1 : 0);
 
-        public bool PrimaryPressedThisFrame => WasPressedThisFrame(AbilityPrimary);
+        private Vector2 ControllerDirection
+        {
+            get
+            {
+                var pad=Controller;
+                if(pad==null)return Vector2.zero;
+                Vector2 stick=pad.leftStick.ReadValue(),dpad=pad.dpad.ReadValue();
+                return dpad.sqrMagnitude>stick.sqrMagnitude?dpad:stick;
+            }
+        }
 
-        public bool SecondaryPressedThisFrame => WasPressedThisFrame(AbilitySecondary);
+        public bool UpPressedThisFrame => WasPressedThisFrame(Up) || Controller?.buttonSouth.wasPressedThisFrame == true;
+
+        public bool PrimaryPressedThisFrame => WasPressedThisFrame(AbilityPrimary) || Controller?.buttonEast.wasPressedThisFrame == true;
+
+        public bool SecondaryPressedThisFrame => WasPressedThisFrame(AbilitySecondary) || Controller?.buttonWest.wasPressedThisFrame == true;
 
         private static float ReadAxis(Key negative, Key positive)
         {

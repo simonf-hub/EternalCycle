@@ -9,9 +9,14 @@ namespace DivineSense
 
         private SpriteRenderer[] _readyGlow;
         private Color[] _baseColors;
+        private LineRenderer _chargeTrack, _chargeFill;
+        private Material _chargeMaterial;
 
         private void Start()
         {
+            _chargeMaterial = new Material(Shader.Find("Sprites/Default"));
+            _chargeTrack = CreateChargeLine("Glide Charge Track", .13f, 40);
+            _chargeFill = CreateChargeLine("Glide Charge Fill", .085f, 41);
             _baseColors = new Color[Renderers.Length];
             for (int i = 0; i < Renderers.Length; i++)
                 _baseColors[i] = Renderers[i].color;
@@ -51,6 +56,7 @@ namespace DivineSense
                         : _baseColors[i];
             }
 
+            UpdateChargeBar(visible);
             if (_readyGlow == null) return;
             Color tint = Color.Lerp(_baseColors[0], Color.white, .35f);
             for (int i = 0; i < _readyGlow.Length; i++)
@@ -61,8 +67,46 @@ namespace DivineSense
             }
         }
 
+        private LineRenderer CreateChargeLine(string label, float width, int order)
+        {
+            var go = new GameObject(label);
+            go.transform.SetParent(transform, false);
+            var line = go.AddComponent<LineRenderer>();
+            line.sharedMaterial = _chargeMaterial;
+            line.positionCount = 2;
+            line.useWorldSpace = true;
+            line.widthMultiplier = width;
+            line.sortingOrder = order;
+            line.numCapVertices = 4;
+            line.enabled = false;
+            return line;
+        }
+
+        private void UpdateChargeBar(bool visible)
+        {
+            var glide = Owner.Motor.Glide;
+            bool show = visible && Owner.CanAct && !Owner.Status.Frozen && glide.Charging
+                && Owner.EquippedLoadout != null && Owner.EquippedLoadout.MovementKind == MovementKind.Touch;
+            _chargeTrack.enabled = _chargeFill.enabled = show;
+            if (!show) return;
+            Bounds bounds = Owner.Motor.Collider.bounds;
+            float width = Mathf.Max(.9f, bounds.size.x + .2f);
+            var left = new Vector3(bounds.center.x - width * .5f, bounds.min.y - .22f, transform.position.z);
+            _chargeTrack.SetPosition(0, left);
+            _chargeTrack.SetPosition(1, left + Vector3.right * width);
+            _chargeTrack.startColor = _chargeTrack.endColor = new Color(.08f, .1f, .18f, .95f);
+            _chargeFill.SetPosition(0, left);
+            _chargeFill.SetPosition(1, left + Vector3.right * width * Mathf.Max(.01f, glide.Charge01));
+            Color color = Color.Lerp(new Color(.3f, .85f, 1f), new Color(1f, .85f, .3f), glide.Charge01);
+            _chargeFill.startColor = _chargeFill.endColor = color;
+        }
+
+        private void OnDestroy() { if (_chargeMaterial != null) Destroy(_chargeMaterial); }
+
         private void OnDisable()
         {
+            if (_chargeTrack != null) _chargeTrack.enabled = false;
+            if (_chargeFill != null) _chargeFill.enabled = false;
             if (_readyGlow != null)
                 foreach (var glow in _readyGlow)
                     if (glow != null) glow.enabled = false;

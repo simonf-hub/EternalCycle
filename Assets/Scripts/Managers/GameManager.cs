@@ -125,8 +125,8 @@ namespace MicroSense
 
         private void Update()
         {
-            if (UnityEngine.InputSystem.Keyboard.current != null
-                && UnityEngine.InputSystem.Keyboard.current.rKey.wasPressedThisFrame)
+            if (EternalCycle.LocalGamepads.RestartPressed || (UnityEngine.InputSystem.Keyboard.current != null
+                && UnityEngine.InputSystem.Keyboard.current.rKey.wasPressedThisFrame))
             {
                 ResetLevel();
                 return;

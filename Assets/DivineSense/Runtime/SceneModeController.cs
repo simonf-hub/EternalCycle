@@ -10,10 +10,10 @@ namespace DivineSense { [DefaultExecutionOrder(-100)] public sealed class SceneM
  public bool Contains(Vector2 p){var r=VisibleBounds;float m=Session.Settings.BoundaryMargin;return p.x>=r.xMin-m&&p.x<=r.xMax+m&&p.y>=r.yMin-m&&p.y<=r.yMax+m;}
  void Start(){CurrentMode=Session.Settings.InitialSceneMode;nextFlipAt=Session.Settings.SceneFlipInterval;Refresh();}
  void Update(){
- if(!Session.IsPlaying)return;
+ if(!Session.IsPlaying||Session.IsPuzzle)return;
  float interval=Mathf.Max(.1f,Session.Settings.SceneFlipInterval);
  while(Session.Now>=nextFlipAt){nextFlipAt+=interval;ToggleMode();}
  }
- public void ToggleMode(){if(!Session.IsPlaying)return;CurrentMode=CurrentMode==SceneMode.Heaven?SceneMode.Hell:SceneMode.Heaven;Refresh();ModeChanged?.Invoke(CurrentMode);}
+ public void ToggleMode(){if(!Session.IsPlaying||Session.IsPuzzle)return;CurrentMode=CurrentMode==SceneMode.Heaven?SceneMode.Hell:SceneMode.Heaven;Refresh();ModeChanged?.Invoke(CurrentMode);}
  void Refresh(){Camera.backgroundColor=CurrentMode==SceneMode.Heaven?new Color(.13f,.23f,.34f):new Color(.19f,.045f,.09f);if(Backdrop)Backdrop.color=Camera.backgroundColor;}
 } }

@@ -4,25 +4,42 @@ namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
  public Transform BodyVisual; public GlideAbility Glide; public DoubleJumpAbility DoubleJump;
  public bool Grounded {get;private set;} bool extraUsed,jumpUsed; float impulse; Vector2 queued;
  readonly ContactPoint2D[] contacts=new ContactPoint2D[16]; float size=1;
- public void Begin(){Body.simulated=true;Body.gravityScale=Owner.Settings.Gravity;}
+ public void Begin(){Glide.ResetAirUse();Body.simulated=true;Body.gravityScale=Owner.Settings.Gravity;}
  void FixedUpdate(){
- if(!Owner.CanAct)return;
+ if(!Owner.CanAct){Glide.Cancel();DoubleJump.CancelDash();Owner.Input.ClearDashTaps();return;}
+ if(Owner.Status.Frozen){
+ // Stare blocks control, but the body keeps its velocity, gravity and contacts.
+ Owner.Input.DiscardActions();
+ Body.linearVelocity+=queued;queued=Vector2.zero;
+ impulse=Mathf.MoveTowards(impulse,0,Owner.Settings.KnockbackDecay*Time.fixedDeltaTime);
+ SetSize(Owner.Status.Grown?Owner.Settings.GrowthScale:1);
+ return;
+ }
  int count=Body.GetContacts(contacts); Grounded=false; float support=0;
  for(int i=0;i<count;i++) if(contacts[i].normal.y>.5f && Body.linearVelocity.y<=Owner.Settings.ScrollSpeed+.5f) {Grounded=true; support=Owner.Session.World.ScrollVelocity;}
- if(Grounded){extraUsed=false;jumpUsed=false;}
+ if(Grounded){extraUsed=false;jumpUsed=false;Glide.ResetAirUse();}
  Vector2 v=Body.linearVelocity;
  bool press=Owner.Input.TakeJump();
  if(press && ((!jumpUsed&&Grounded)||DoubleJump.Allowed(Owner,extraUsed))) {
- bool airborne = !Grounded;
- if(airborne)extraUsed=true; jumpUsed=true;v.y=DoubleJump.JumpVelocity(Owner,airborne)+Mathf.Max(0,support);Grounded=false;
+ // Falling off a platform does not consume the first jump in Taste's budget.
+ bool secondJump = jumpUsed;
+ if(secondJump)extraUsed=true;
+ jumpUsed=true;v.y=DoubleJump.JumpVelocity(Owner,secondJump)+Mathf.Max(0,support);Grounded=false;
  }
  float direction=Owner.Input.Horizontal*(Owner.Status.Reversed?-1:1);
  impulse+=queued.x;v.y+=queued.y;queued=Vector2.zero;
- v.x=direction*Owner.Settings.MoveSpeed*(Owner.Status.Grown?Owner.Settings.GrowthSlowdown:1)+impulse;
+ float walkingVelocity=direction*Owner.Settings.MoveSpeed*(Owner.Status.Grown?Owner.Settings.GrowthSlowdown:1);
+ v.x=DoubleJump.DashVelocity(Owner,Owner.Input.TakeDash(),walkingVelocity)+impulse;
  impulse=Mathf.MoveTowards(impulse,0,Owner.Settings.KnockbackDecay*Time.fixedDeltaTime);
- v.y=Glide.Limit(Owner,v.y); Body.linearVelocity=v;
+ Glide.ApplyMotion(Owner,ref v,Grounded,Owner.Input.TakeGlideRelease()); Body.linearVelocity=v;
  SetSize(Owner.Status.Grown?Owner.Settings.GrowthScale:1);
  if(Owner.Input.TakeAbility())Owner.Abilities.TryActivateActive();
+ }
+ public void StopHorizontalMotion(){
+ Glide.Cancel();
+ DoubleJump.CancelDash();
+ Body.linearVelocity=new Vector2(0,Body.linearVelocity.y);
+ impulse=0;queued.x=0;
  }
  public void QueueKnockback(Vector2 delta){queued+=delta;}
  public void Teleport(Vector2 position, bool resetVelocity)
@@ -35,6 +52,9 @@ namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
      Body.position = position;
      Body.interpolation = interpolation;
      Grounded = false;
+     Glide.Cancel();
+     DoubleJump.CancelDash();
+     Owner.Input.ClearDashTaps();
      if (resetVelocity)
      {
          Body.linearVelocity = Vector2.zero;
@@ -53,5 +73,5 @@ namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
  }
  return bounds.center;
  }
- public void Freeze(){Body.linearVelocity=Vector2.zero;Body.simulated=false;SetSize(1);}
+ public void Freeze(){Glide.Cancel();DoubleJump.CancelDash();Body.linearVelocity=Vector2.zero;Body.simulated=false;SetSize(1);}
 } }

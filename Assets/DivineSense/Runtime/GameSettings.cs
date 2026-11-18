@@ -6,13 +6,26 @@ public sealed class GameSettings : ScriptableObject {
  [Min(.1f)] public float SceneFlipInterval=16;
  public int FollowerPickupValue=100, StartingFollowers=0;
  [Range(0,1)] public float DeathLossFraction=.2f;
- public float SightDuration=2, SightCooldown=20, SoundCooldown=20;
+ public float SightDuration=1.5f, SightCooldown=20, SoundCooldown=20;
  public float GrowthDuration=3, AbilitySwapDuration=3, ReverseControlsDuration=3;
  public float SightRadius=7, SoundRadius=4, SoundImpulse=12;
- public float MoveSpeed=6, JumpSpeed=12, Gravity=3, GlideSpeed=2, KnockbackDecay=6;
- [Tooltip("Taste's airborne jump height relative to the first jump. Landing restores full jump height.")]
+ public float MoveSpeed=6, JumpSpeed=12, Gravity=3, GlideSpeed=1, KnockbackDecay=6;
+ [Header("Glide release dash")]
+ [Tooltip("Minimum upward distance travelled when releasing an active glide.")]
+ [Min(0)] public float GlideDashDistance=1.5f;
+ [Min(.01f)] public float GlideDashDuration=.12f;
+ [Tooltip("Maximum upward dash distance at full glide charge.")]
+ [Min(0)] public float GlideDashMaxDistance=4f;
+ [Tooltip("Seconds spent gliding to reach full dash charge.")]
+ [Min(.01f)] public float GlideDashChargeTime=1.5f;
+ [Tooltip("Taste's second jump height relative to the first jump. Landing restores full jump height.")]
  [Range(.1f,1f)] public float TasteSecondJumpHeightMultiplier=.8f;
- public float ScrollSpeed=.8f, PlatformSpacing=2f, PlatformWidth=4.2f, CrumbleDelay=1.5f;
+ [Header("Taste horizontal dash")]
+ [Tooltip("Maximum time in seconds between two presses in the same direction.")]
+ [Min(.01f)] public float TasteDashTapWindow=.25f;
+ [Min(0)] public float TasteDashDistance=2f;
+ [Min(.01f)] public float TasteDashDuration=.12f;
+ public float ScrollSpeed=1.5f, PlatformSpacing=2f, PlatformWidth=4.2f, CrumbleDelay=1.5f;
  [Header("Platform scatter")]
  [Min(1)] public int PlatformLaneCount=3;
  public float PlatformMinimumWidth=2.8f, PlatformSpacingVariation=.15f;
@@ -23,6 +36,11 @@ public sealed class GameSettings : ScriptableObject {
  [Tooltip("Jump height multiplier while Demeter growth is active, including Taste jumps.")]
  [Min(1f)] public float GrowthJumpHeightMultiplier=1.5f;
  public float GrowthScale=1.5f, GrowthSlowdown=.65f, MarkerSpeed=6, PickupFallSpeed=2.5f;
+ [Header("Combat pickups")]
+ [Min(0)] public float PullImpulse=14;
+ [Min(.1f)] public float HomingBombSpeed=7, HomingBombLifetime=6;
+
+ public GameObject PoseidonPickupPrefab, AresPickupPrefab;
  public int GodPickupCount=1;
  public float BoundaryMargin=0, CullMargin=4, PickupSpawnInset=1;
  public SceneMode InitialSceneMode=SceneMode.Heaven;
@@ -30,15 +48,22 @@ public sealed class GameSettings : ScriptableObject {
  public GameObject PlatformPrefab, CrumblePrefab, GodPickupPrefab;
  public GameObject HermesPickupPrefab, DemeterPickupPrefab, AthenaPickupPrefab, DionysusPickupPrefab;
  public GameObject PickupPrefabFor(GodKind kind) {
+ if(kind==GodKind.Poseidon)return PoseidonPickupPrefab?PoseidonPickupPrefab:GodPickupPrefab;
+ if(kind==GodKind.Ares)return AresPickupPrefab?AresPickupPrefab:GodPickupPrefab;
  var prefab=kind==GodKind.Hermes?HermesPickupPrefab:kind==GodKind.Demeter?DemeterPickupPrefab:kind==GodKind.Athena?AthenaPickupPrefab:DionysusPickupPrefab;
  return prefab?prefab:GodPickupPrefab;
  }
  void OnValidate() {
+ GlideDashDistance=Mathf.Max(0,GlideDashDistance);GlideDashDuration=Mathf.Max(.01f,GlideDashDuration);
+ GlideDashMaxDistance=Mathf.Max(GlideDashDistance,GlideDashMaxDistance);GlideDashChargeTime=Mathf.Max(.01f,GlideDashChargeTime);
  SceneFlipInterval=Mathf.Max(.1f,SceneFlipInterval);
  GrowthJumpHeightMultiplier=Mathf.Max(1f,GrowthJumpHeightMultiplier);
  RoundDuration=Mathf.Max(1,RoundDuration); GodInterval=Mathf.Max(.1f,GodInterval);
  RespawnDuration=Mathf.Max(.1f,RespawnDuration); SightRadius=Mathf.Max(SoundRadius+.1f,SightRadius);
  TasteSecondJumpHeightMultiplier=Mathf.Clamp(TasteSecondJumpHeightMultiplier,.1f,1f);
+ TasteDashTapWindow=Mathf.Max(.01f,TasteDashTapWindow);
+ TasteDashDistance=Mathf.Max(0,TasteDashDistance);
+ TasteDashDuration=Mathf.Max(.01f,TasteDashDuration);
  PlatformLaneCount=Mathf.Clamp(PlatformLaneCount,1,5);
  PlatformWidth=Mathf.Max(1,PlatformWidth);
  PlatformMinimumWidth=Mathf.Clamp(PlatformMinimumWidth,1,PlatformWidth);

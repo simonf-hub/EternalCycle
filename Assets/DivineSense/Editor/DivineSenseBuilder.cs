@@ -29,7 +29,6 @@ public static class DivineSenseBuilder {
  var gods=managers.AddComponent<GodDirector>();gods.Session=session;gods.PositionSwap=pos;gods.Growth=growth;gods.AbilitySwap=swap;gods.Reverse=reverse;gods.PickupsRoot=new GameObject("GodPickupsRoot").transform;
  var spawn=managers.AddComponent<PlatformSpawner>();spawn.Session=session;spawn.Root=new GameObject("PlatformsRoot").transform;
  registry.Players=new[]{Player(0,session,registry),Player(1,session,registry)};
- Physics2D.IgnoreCollision(registry.Players[0].Motor.Collider,registry.Players[1].Motor.Collider);
  var setup=managers.AddComponent<MatchSetupController>();setup.Session=session;
  var hud=new GameObject("HUD").AddComponent<HUDController>();hud.Session=session;hud.Setup=setup;hud.Gods=gods;
  var bg=new GameObject("Divine Colosseum").transform;

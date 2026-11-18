@@ -7,7 +7,7 @@ namespace DivineSense
     {
         // Keep enum IDs stable for serialized assets; Zeus no longer enters this pool.
         private static readonly GodKind[] PickupGods =
-            { GodKind.Hermes, GodKind.Demeter, GodKind.Athena, GodKind.Dionysus };
+            { GodKind.Hermes, GodKind.Demeter, GodKind.Athena, GodKind.Dionysus, GodKind.Poseidon, GodKind.Ares };
 
         public GameSession Session;
         public Transform PickupsRoot;
@@ -37,14 +37,15 @@ namespace DivineSense
                 previous < 0 ? PickupGods.Length : PickupGods.Length - 1), previous);
             previous = index;
             GodKind kind = PickupGods[index];
-            Cue = kind + " DROPS — " + Description(kind);
+            Cue = GodPickup.DisplayName(kind) + " DROPS — " + Description(kind);
             for (int i = 0; i < Session.Settings.GodPickupCount; i++) Drop(kind);
             Intervened?.Invoke(kind);
         }
 
         private string Description(GodKind kind) => kind == GodKind.Hermes ? "POSITION SWAP" :
             kind == GodKind.Demeter ? "GROWTH" : kind == GodKind.Athena ? "ABILITY SWAP" :
-            "OPPONENT CONTROLS REVERSED";
+            kind == GodKind.Dionysus ? "OPPONENT CONTROLS REVERSED" :
+            kind == GodKind.Poseidon ? "PULL OPPONENT TOWARD YOU" : "HOMING BOMB — FREEZE FOR 3s";
 
         private void Drop(GodKind kind)
         {
@@ -59,14 +60,15 @@ namespace DivineSense
             {
                 switch (kind)
                 {
+                    case GodKind.Poseidon: PullOpponentEffect.Apply(collector); break;
+                    case GodKind.Ares: HomingBomb.Launch(collector, PickupsRoot); break;
                     case GodKind.Hermes: PositionSwap.Apply(); break;
                     case GodKind.Demeter: Growth.Apply(collector); break;
                     case GodKind.Athena: AbilitySwap.Apply(); break;
                     case GodKind.Dionysus: Reverse.Apply(collector.Registry.Opponent(collector)); break;
                 }
             };
-            var label = gift.GetComponentInChildren<TextMesh>();
-            if (label != null) label.text = kind.ToString();
+            pickup.RefreshAppearance();
         }
     }
 }

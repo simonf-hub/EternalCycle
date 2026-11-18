@@ -54,11 +54,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4506978594220047120, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
       propertyPath: m_Name
-      value: AthenaPickup
+      value: Medusa’s Swap
       objectReference: {fileID: 0}
     - target: {fileID: 6626996884427894742, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
       propertyPath: m_Text
-      value: Athena
+      value: Medusa’s Swap
+      objectReference: {fileID: 0}
+    - target: {fileID: 8758001802506491622, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
+      propertyPath: m_Color.r
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8758001802506491622, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
+      propertyPath: m_Color.g
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8758001802506491622, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
+      propertyPath: m_Color.b
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

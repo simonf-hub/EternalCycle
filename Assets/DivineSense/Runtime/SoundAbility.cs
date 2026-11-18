@@ -18,6 +18,13 @@ namespace DivineSense
         {
             // Show every cast, including casts that do not hit an opponent.
             ShowWave(p.Endpoint, p.Settings.SoundRadius);
+            if(p.Session.IsPuzzle) {
+                foreach(var wall in FindObjectsByType<MicroSense.BreakablePlatform>(FindObjectsSortMode.None)) {
+                    var collider=wall.GetComponent<Collider2D>();
+                    if(!wall.IsBroken && collider && Vector2.Distance(p.Endpoint,collider.ClosestPoint(p.Endpoint))<=p.Settings.SoundRadius) wall.Break();
+                }
+                return;
+            }
             var t = p.Registry.Opponent(p);
             if (!t.CanAct || t.Status.Grown
                 || Vector2.Distance(p.Endpoint, t.Endpoint) > p.Settings.SoundRadius) return;

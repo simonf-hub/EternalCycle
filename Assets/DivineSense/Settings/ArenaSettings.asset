@@ -19,7 +19,7 @@ MonoBehaviour:
   FollowerPickupValue: 100
   StartingFollowers: 0
   DeathLossFraction: 0.2
-  SightDuration: 2
+  SightDuration: 1.5
   SightCooldown: 20
   SoundCooldown: 20
   GrowthDuration: 3
@@ -31,10 +31,17 @@ MonoBehaviour:
   MoveSpeed: 6
   JumpSpeed: 12
   Gravity: 3
-  GlideSpeed: 2
+  GlideSpeed: 1
+  GlideDashDistance: 1.5
+  GlideDashDuration: 0.12
+  GlideDashMaxDistance: 4
+  GlideDashChargeTime: 1.5
   KnockbackDecay: 6
   TasteSecondJumpHeightMultiplier: 0.8
-  ScrollSpeed: 0.8
+  TasteDashTapWindow: 0.25
+  TasteDashDistance: 2
+  TasteDashDuration: 0.12
+  ScrollSpeed: 1.5
   PlatformSpacing: 2
   PlatformWidth: 4.2
   CrumbleDelay: 1.5
@@ -68,3 +75,5 @@ MonoBehaviour:
   DemeterPickupPrefab: {fileID: 2516146461291924162, guid: 68eca5a3b55e0473f86e066deacc5f4a, type: 3}
   AthenaPickupPrefab: {fileID: 6470697883228938087, guid: bf014c1c0cba74ed883ad6d3e1e4866d, type: 3}
   DionysusPickupPrefab: {fileID: 7961585928390021139, guid: 1fd70c45497a44f469659a5527affeee, type: 3}
+  PoseidonPickupPrefab: {fileID: 4506978594220047120, guid: 3ede300014964818a189d956f5845893, type: 3}
+  AresPickupPrefab: {fileID: 4506978594220047120, guid: 7eb8526f21514b629fa771d42f74e310, type: 3}

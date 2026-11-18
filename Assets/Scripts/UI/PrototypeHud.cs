@@ -43,7 +43,7 @@ namespace MicroSense
 
             GUI.Label(
                 new Rect(margin, canvasSize.y - 38f, canvasSize.x - margin * 2f, 24f),
-                "Reset [R]",
+                "Reset [R / Back] · PAD: stick/D-pad move · bottom jump · right slot 1 · left slot 2",
                 _objectiveStyle);
 
             if (_gameManager.LevelComplete)

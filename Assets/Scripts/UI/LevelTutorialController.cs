@@ -101,21 +101,16 @@ namespace MicroSense
         private void Update()
         {
             Keyboard keyboard = Keyboard.current;
-            if (keyboard == null)
-            {
-                return;
-            }
-
-            if (keyboard.rKey.wasPressedThisFrame)
+            if (EternalCycle.LocalGamepads.RestartPressed || (keyboard != null && keyboard.rKey.wasPressedThisFrame))
             {
                 ResetTutorial();
                 return;
             }
 
             if (_isOpen
-                && (keyboard.enterKey.wasPressedThisFrame
+                && (EternalCycle.LocalGamepads.ConfirmPressed || (keyboard != null && (keyboard.enterKey.wasPressedThisFrame
                     || keyboard.numpadEnterKey.wasPressedThisFrame
-                    || keyboard.spaceKey.wasPressedThisFrame))
+                    || keyboard.spaceKey.wasPressedThisFrame))))
             {
                 CloseCurrentMessage();
             }

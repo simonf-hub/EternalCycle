@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DivineSense_Arena.unity
     guid: 4da7fd435939841e89b62cef53e23e59
+  - enabled: 1
+    path: Assets/Scenes/DivineSense_Puzzle_1.unity
+    guid: 9bcf6933e61084f2eb8f1a7efdb31b41
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
