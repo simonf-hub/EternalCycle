@@ -32,13 +32,13 @@ namespace DivineSense {
    camera.orthographicSize=Mathf.Max(7,Mathf.Abs(players[0].Endpoint.y-players[1].Endpoint.y)*.5f+3,Mathf.Abs(players[0].Endpoint.x-players[1].Endpoint.x)*.5f/camera.aspect+3);
   }
   void OnGUI() {
-   GUI.Box(new Rect(10,10,Screen.width-20,104),"DIVINE SENSE — PUZZLE 1\nAngel: A/D move · W jump · S power   |   Devil: ←/→ move · ↑ jump · ↓ power\nPad: stick/D-pad move · bottom jump/glide · right power | Glide: hold to charge, release to dash up\nSight: purple radius reveals platforms   |   Sound: cyan radius breaks walls   |   Reach the exit together");
+   GUI.Box(new Rect(10,10,Screen.width-20,104),$"DIVINE SENSE — PUZZLE 1\n{LocalGamepads.ContestantName(0)}: A/D move · W jump · S power   |   {LocalGamepads.ContestantName(1)}: ←/→ move · ↑ jump · ↓ power\nPad: stick/D-pad move · bottom jump/glide · right power | Glide: hold to charge, release to dash up\nSight: purple radius reveals platforms   |   Sound: cyan radius breaks walls   |   Reach the exit together");
    GUI.Label(new Rect(20,176,Screen.width-40,24),LocalGamepads.Status);
    for(int i=0;i<2;i++) {
     var p=Session.Registry.Players[i];
-    if(p.EquippedLoadout!=null) GUI.Label(new Rect(20,122+i*24,600,24),(i==0?"ANGEL: ":"DEVIL: ")+p.EquippedLoadout.ActiveKind+" / "+p.EquippedLoadout.MovementKind+"   "+(p.Abilities.Cooldown>0?p.Abilities.Cooldown.ToString("0.0")+"s":"READY"));
+    if(p.EquippedLoadout!=null) GUI.Label(new Rect(20,122+i*24,600,24),LocalGamepads.ContestantName(i)+": "+p.EquippedLoadout.ActiveKind+" / "+p.EquippedLoadout.MovementKind+"   "+(p.Abilities.Cooldown>0?p.Abilities.Cooldown.ToString("0.0")+"s":"READY"));
    }
-   if(complete) {GUI.Box(new Rect(Screen.width/2-180,Screen.height/2-50,360,100),"PUZZLE COMPLETE — ANGEL AND DEVIL");if(GUI.Button(new Rect(Screen.width/2-100,Screen.height/2,200,36),"PLAY AGAIN"))SceneManager.LoadScene(SceneManager.GetActiveScene().path);}
+   if(complete) {GUI.Box(new Rect(Screen.width/2-235,Screen.height/2-50,470,100),$"PUZZLE COMPLETE — {LocalGamepads.ContestantName(0)} AND {LocalGamepads.ContestantName(1)}");if(GUI.Button(new Rect(Screen.width/2-100,Screen.height/2,200,36),"PLAY AGAIN"))SceneManager.LoadScene(SceneManager.GetActiveScene().path);}
   }
  }
 }

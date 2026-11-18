@@ -1,4 +1,5 @@
 using System;
+using EternalCycle;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 namespace DivineSense {
@@ -24,7 +25,7 @@ namespace DivineSense {
  public void FinishRound() {
  if(!IsPlaying)return; State=MatchState.Finished;
  int a=Registry.Players[0].Score.Total,b=Registry.Players[1].Score.Total;
- Result=a==b?"DRAW — THE GODS DEMAND A REMATCH":(a>b?"ANGEL":"DEVIL")+" WINS THE GODS' APPROVAL";
+ Result=a==b?"DRAW — THE GODS DEMAND A REMATCH":LocalGamepads.ContestantName(a>b?0:1)+" WINS THE GODS' APPROVAL";
  if(SceneManager.GetActiveScene().name=="DivineSense_Arena") {
  PuzzleProgress.Capture(this);
  results=gameObject.AddComponent<ArenaResults>();

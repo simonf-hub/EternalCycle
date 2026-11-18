@@ -1,3 +1,4 @@
+using EternalCycle;
 using UnityEngine;
 
 namespace DivineSense
@@ -67,7 +68,7 @@ namespace DivineSense
         private void DrawKeyboardControls(Vector2 center, int player, string left, string right, string jump, string cast)
         {
             Panel(center, -146f, 300f, 257f);
-            Label(center, -126f, 270f, 32f, HUDController.ContestantName(player) + " · KEYBOARD",
+            Label(center, -126f, 270f, 32f, $"Mortal {player + 1} · KEYBOARD",
                 controlHeading, HUDController.FollowerColor(player));
             Keycap(center, 0f, -78f, 54f, jump);
             Label(center, -30f, 270f, 26f, "Jump", body, Muted);
@@ -88,7 +89,7 @@ namespace DivineSense
                 Color accent = HUDController.FollowerColor(player);
                 var (sense, movement) = loadouts[player];
                 Panel(column, -140f, 460f, 310f);
-                Label(column, -119f, 410f, 31f, HUDController.ContestantName(player), heading, accent);
+                Label(column, -119f, 410f, 31f, LocalGamepads.ContestantName(player), heading, accent);
                 Label(column, -77f, 410f, 32f, sense.ToString(), heading, Ivory);
                 Label(column, -41f, 410f, 48f, sense == ActiveKind.Sight
                     ? "Release a wave that briefly hides a nearby rival."

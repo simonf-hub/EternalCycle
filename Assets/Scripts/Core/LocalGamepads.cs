@@ -92,13 +92,15 @@ namespace EternalCycle
             }
             return player >= 0 && player < slots.Length ? slots[player] : null;
         }
+        internal static string ContestantName(int player) => player == 0 ? "Angel (Mortal 1)" : "Devil (Mortal 2)";
+
         public static string Status
         {
             get
             {
                 var a = ForPlayer(0); var b = ForPlayer(1);
-                return "Angel: " + (a == null ? "no controller detected" : a.Device.displayName)
-                    + "   |   Devil: " + (b == null ? "no controller detected" : b.Device.displayName);
+                return ContestantName(0) + ": " + (a == null ? "no controller detected" : a.Device.displayName)
+                    + "   |   " + ContestantName(1) + ": " + (b == null ? "no controller detected" : b.Device.displayName);
             }
         }
         public static bool RestartPressed

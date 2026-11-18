@@ -5,7 +5,7 @@ namespace DivineSense
 {
     internal struct TrialContinueInput
     {
-        internal const string Prompt = "Press Space or RT on either controller to continue";
+        internal const string Prompt = "Press Space or RB on either controller to continue";
         private const float TriggerThreshold = 0.5f;
         private int heldInputs;
 

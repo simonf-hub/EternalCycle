@@ -1,6 +1,7 @@
 using EternalCycle;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static EternalCycle.LocalGamepads;
 namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  public GameSession Session; public MatchSetupController Setup; public GodDirector Gods;
  int a,b,c=1,d=1; GUIStyle title,text,small; Texture2D panel;
@@ -8,7 +9,6 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  float deathLossPercent,scrollSpeed,maximumScrollSpeed;
  internal static Rect FollowerLabelRect(int player) => new Rect(player==0?25:890,12,365,30);
  internal static Color FollowerColor(int player) => player==0?new Color(1,.88f,.5f):new Color(1,.46f,.46f);
- internal static string ContestantName(int player) => player==0?"ANGEL":"DEVIL";
  void Start(){
  deathLossPercent=Mathf.Clamp(Session.Settings.DeathLossFraction*100f,0,100);
  scrollSpeed=Mathf.Max(0,Session.Settings.ScrollSpeed);
@@ -48,7 +48,7 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  GUI.Label(new Rect(480,49,320,35),Mathf.CeilToInt(Mathf.Max(0,Session.Settings.RoundDuration-Session.Now))+"s   •   FLIP IN "+Mathf.CeilToInt(Session.World.FlipRemaining)+"s",text);
  for(int i=0;i<2;i++){var p=Session.Registry.Players[i];var scoreRect=FollowerLabelRect(i);float x=scoreRect.x;if(!Session.IsShowingResults){GUI.color=FollowerColor(i);GUI.Label(scoreRect,ContestantName(i)+"   "+p.Score.Total+" followers",text);GUI.color=Color.white;}if(p.EquippedLoadout!=null)GUI.Label(new Rect(x,44,365,28),p.EquippedLoadout.ActiveKind+" "+(p.Abilities.Cooldown>0?Mathf.CeilToInt(p.Abilities.Cooldown)+"s":"READY")+" / "+p.EquippedLoadout.MovementKind,small);GUI.Label(new Rect(x,72,365,22),p.Life.State==LifeState.RespawnPlacement?"PLACE CROSS: "+p.Respawn.Remaining.ToString("0.0")+"s":p.Status.Grown?"GROWTH • IMMUNE":p.Status.Reversed?"CONTROLS REVERSED":"",small);}
  GUI.color=new Color(.025f,.035f,.065f,.9f);GUI.DrawTexture(new Rect(0,730,1280,70),panel);GUI.color=Color.white;
- GUI.Label(new Rect(0,733,1280,26),Gods.Cue, text);GUI.Label(new Rect(0,765,1280,25),"ANGEL: A/D · W jump · S power | DEVIL: ←/→ · ↑ jump · ↓ power | PAD: stick/D-pad · bottom jump · right power | GLIDE: hold to charge, release to dash up",small);
+ GUI.Label(new Rect(0,733,1280,26),Gods.Cue, text);GUI.Label(new Rect(0,765,1280,25),$"{ContestantName(0)}: A/D · W jump · S power | {ContestantName(1)}: ←/→ · ↑ jump · ↓ power | PAD: stick/D-pad · bottom jump · right power | GLIDE: hold to charge, release to dash up",small);
  if(Session.IsPlaying){
  foreach(var p in Session.Registry.Players){
  if(!p.Status.Frozen)continue;
@@ -67,9 +67,11 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  GUI.Box(new Rect(270,200,740,470),"");
  GUI.Label(new Rect(290,220,700,45),"SEPARATE SENSES. SHARED SURVIVAL.",title);
  GUI.Label(new Rect(290,275,700,45),"Win followers. Survive the scroll. Outplay your rival.",text);
- a=GUI.SelectionGrid(new Rect(310,350,300,40),a,new[]{"Angel: Sight","Angel: Sound"},2);
+ GUI.Label(new Rect(310,315,300,30),ContestantName(0),text);
+ a=GUI.SelectionGrid(new Rect(310,350,300,40),a,new[]{"Sight","Sound"},2);
  b=GUI.SelectionGrid(new Rect(310,405,300,40),b,new[]{"Touch: glide","Taste: double jump"},2);
- c=GUI.SelectionGrid(new Rect(670,350,300,40),c,new[]{"Devil: Sight","Devil: Sound"},2);
+ GUI.Label(new Rect(670,315,300,30),ContestantName(1),text);
+ c=GUI.SelectionGrid(new Rect(670,350,300,40),c,new[]{"Sight","Sound"},2);
  d=GUI.SelectionGrid(new Rect(670,405,300,40),d,new[]{"Touch: glide","Taste: double jump"},2);
  GUI.Label(new Rect(300,462,350,30),"Followers lost per death: "+deathLossPercent.ToString("0")+"%",text);
  deathLossPercent=Mathf.Round(GUI.HorizontalSlider(new Rect(680,472,280,20),deathLossPercent,0,100));
@@ -79,7 +81,7 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  if(GUI.Button(new Rect(490,600,300,50),"ENTER THE COLOSSEUM")){
  BeginMatch();
  }
- GUI.Label(new Rect(290,574,700,25),"PAD 1 editing "+(setupTargets[0]==0?"Angel":"Devil")+" · PAD 2 editing "+(setupTargets[1]==0?"Angel":"Devil")+" · LB/RB death loss · right stick ↕ scroll speed",small);
+ GUI.Label(new Rect(290,574,700,25),"PAD 1 editing "+ContestantName(setupTargets[0])+" · PAD 2 editing "+ContestantName(setupTargets[1])+" · LB/RB death loss · right stick ↕ scroll speed",small);
  }
  if(Session.State==MatchState.Finished&&!Session.IsShowingResults){GUI.Box(new Rect(250,290,780,190),"");GUI.Label(new Rect(265,310,750,60),Session.Result,text);if(GUI.Button(new Rect(490,400,300,45),"PLAY AGAIN"))SceneManager.LoadScene(SceneManager.GetActiveScene().path);}
  GUI.matrix=old;

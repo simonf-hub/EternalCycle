@@ -1,5 +1,6 @@
 using System;
 using MicroSense;
+using EternalCycle;
 using UnityEngine;
 
 namespace DivineSense
@@ -93,7 +94,7 @@ namespace DivineSense
             Vector2 scoreCenter = Vector2.Lerp(Vector2.Scale(labelRect.center, hudScale), scoreTarget, movement);
             float scoreReveal = Mathf.SmoothStep(0f, 1f, (movement - 0.15f) / 0.65f);
 
-            string name = HUDController.ContestantName(player);
+            string name = LocalGamepads.ContestantName(player);
             Color color = HUDController.FollowerColor(player);
             color.a = (1f - scoreReveal) * opacity;
             GUI.color = color;
