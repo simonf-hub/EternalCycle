@@ -23,6 +23,7 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  Session.ShowNarrative(false,()=>Setup.Begin(angelSense,angelMovement,devilSense,devilMovement),tutorial);
  }
  void Update(){
+ if(Session.Trial!=TrialLevel.Prototype)return;
  if(Session.IsShowingNarrative||Session.IsShowingResults)return;
  if(Session.State==MatchState.Finished){if(LocalGamepads.ConfirmPressed)SceneManager.LoadScene(SceneManager.GetActiveScene().path);return;}
  if(Session.State!=MatchState.Setup)return;
@@ -46,9 +47,13 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  GUI.color=new Color(.025f,.035f,.065f,.92f);GUI.DrawTexture(new Rect(0,0,1280,105),panel);GUI.color=Color.white;
  GUI.Label(new Rect(0,8,1280,36),"DIVINE-SENSE   /   "+Session.World.CurrentMode,title);
  GUI.Label(new Rect(480,49,320,35),Mathf.CeilToInt(Mathf.Max(0,Session.Settings.RoundDuration-Session.Now))+"s   •   FLIP IN "+Mathf.CeilToInt(Session.World.FlipRemaining)+"s",text);
- for(int i=0;i<2;i++){var p=Session.Registry.Players[i];var scoreRect=FollowerLabelRect(i);float x=scoreRect.x;if(!Session.IsShowingResults){GUI.color=FollowerColor(i);GUI.Label(scoreRect,ContestantName(i)+"   "+p.Score.Total+" followers",text);GUI.color=Color.white;}if(p.EquippedLoadout!=null)GUI.Label(new Rect(x,44,365,28),p.EquippedLoadout.ActiveKind+" "+(p.Abilities.Cooldown>0?Mathf.CeilToInt(p.Abilities.Cooldown)+"s":"READY")+" / "+p.EquippedLoadout.MovementKind,small);GUI.Label(new Rect(x,72,365,22),p.Life.State==LifeState.RespawnPlacement?"PLACE CROSS: "+p.Respawn.Remaining.ToString("0.0")+"s":p.Status.Grown?"GROWTH • IMMUNE":p.Status.Reversed?"CONTROLS REVERSED":"",small);}
+ for(int i=0;i<2;i++){var p=Session.Registry.Players[i];var scoreRect=FollowerLabelRect(i);float x=scoreRect.x;if(!Session.IsShowingResults){GUI.color=FollowerColor(i);GUI.Label(scoreRect,ContestantName(i)+"   "+p.Score.Total+" followers",text);GUI.color=Color.white;}if(p.EquippedLoadout!=null)GUI.Label(new Rect(x,44,365,28),p.EquippedLoadout.ActiveKind+" "+(p.Abilities.Cooldown>0?Mathf.CeilToInt(p.Abilities.Cooldown)+"s":"READY")+" / "+p.EquippedLoadout.MovementKind,small);GUI.Label(new Rect(x,72,365,22),p.Life.State==LifeState.RespawnPlacement?"PLACE CROSS: "+p.Respawn.Remaining.ToString("0.0")+"s":p.Status.Grown?"AGILITY • SIGHT / SOUND IMMUNE":p.Status.Reversed?"CONTROLS REVERSED":"",small);}
  GUI.color=new Color(.025f,.035f,.065f,.9f);GUI.DrawTexture(new Rect(0,730,1280,70),panel);GUI.color=Color.white;
- GUI.Label(new Rect(0,733,1280,26),Gods.Cue, text);GUI.Label(new Rect(0,765,1280,25),$"{ContestantName(0)}: A/D · W jump · S power | {ContestantName(1)}: ←/→ · ↑ jump · ↓ power | PAD: stick/D-pad · bottom jump · right power | GLIDE: hold to charge, release to dash up",small);
+ string controls=Session.Trial==TrialLevel.Prototype?"Stick / D-pad · A jump · B cast":"Left stick move · A jump · B cast";
+ string objective=string.IsNullOrEmpty(Gods.Cue) && Session.Trial==TrialLevel.Arena
+     ?"Collect more followers than your opponent":Gods.Cue;
+ GUI.Label(new Rect(0,733,1280,26),objective,text);
+ GUI.Label(new Rect(0,765,1280,25),$"Mortal 1  A/D move · W jump · S cast    |    Mortal 2  ←/→ move · ↑ jump · ↓ cast    |    {controls}",small);
  if(Session.IsPlaying){
  foreach(var p in Session.Registry.Players){
  if(!p.Status.Frozen)continue;
@@ -62,7 +67,7 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  GUI.color=Color.white;
  }
  }
- if(Session.State==MatchState.Setup){
+ if(Session.Trial==TrialLevel.Prototype && Session.State==MatchState.Setup){
  GUI.Label(new Rect(40,150,1200,35),LocalGamepads.Status,small);
  GUI.Box(new Rect(270,200,740,470),"");
  GUI.Label(new Rect(290,220,700,45),"SEPARATE SENSES. SHARED SURVIVAL.",title);
@@ -83,7 +88,7 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  }
  GUI.Label(new Rect(290,574,700,25),"PAD 1 editing "+ContestantName(setupTargets[0])+" · PAD 2 editing "+ContestantName(setupTargets[1])+" · LB/RB death loss · right stick ↕ scroll speed",small);
  }
- if(Session.State==MatchState.Finished&&!Session.IsShowingResults){GUI.Box(new Rect(250,290,780,190),"");GUI.Label(new Rect(265,310,750,60),Session.Result,text);if(GUI.Button(new Rect(490,400,300,45),"PLAY AGAIN"))SceneManager.LoadScene(SceneManager.GetActiveScene().path);}
+ if(Session.Trial==TrialLevel.Prototype&&Session.State==MatchState.Finished&&!Session.IsShowingResults){GUI.Box(new Rect(250,290,780,190),"");GUI.Label(new Rect(265,310,750,60),Session.Result,text);if(GUI.Button(new Rect(490,400,300,45),"PLAY AGAIN"))SceneManager.LoadScene(SceneManager.GetActiveScene().path);}
  GUI.matrix=old;
  }
 } }

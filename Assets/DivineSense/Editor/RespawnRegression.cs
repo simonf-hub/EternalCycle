@@ -6,7 +6,7 @@ using UnityEngine;
 public static class RespawnRegression {
  static GameSession session;static PlayerContext p;static double start;static int stage;static float deathAt;static int rebirths;static float rebornAt;static bool wrongPosition;static Vector2 expected;static int cycle;
  [InitializeOnLoadMethod] static void Resume(){if(SessionState.GetBool("RespawnCheck",false)){start=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;}}
- public static void Run(){SessionState.SetBool("RespawnCheck",true);EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");start=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;EditorApplication.isPlaying=true;}
+ public static void Run(){SessionState.SetBool("RespawnCheck",true);EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");start=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;EditorApplication.isPlaying=true;}
  static void Tick(){try{
  if(EditorApplication.timeSinceStartup-start>90)throw new Exception("timeout");
  if(!EditorApplication.isPlaying||EditorApplication.isCompiling||EditorApplication.timeSinceStartup-start<12)return;

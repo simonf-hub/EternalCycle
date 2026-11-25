@@ -11,14 +11,13 @@ namespace DivineSenseEditor
     {
         public const string ArenaFolder = "Assets/Prefabs/EternalCycle/Arena";
 
-        [MenuItem("Divine-Sense/Organize EternalCycle Prefabs")]
         public static void Organize()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 throw new InvalidOperationException("Exit Play Mode before organizing prefabs.");
             if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             AssetDatabase.Refresh();
-            var scene = EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");
+            var scene = EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");
             var session = UnityEngine.Object.FindFirstObjectByType<GameSession>();
             foreach (var player in UnityEngine.Object.FindObjectsByType<PlayerContext>(FindObjectsSortMode.None))
                 Connect(player.gameObject, ArenaFolder + "/" + (player.Id == 0 ? "Angel" : "Devil") + ".prefab");
@@ -33,7 +32,7 @@ namespace DivineSenseEditor
             foreach (var player in session.Registry.Players)
                 if (!PrefabUtility.IsPartOfPrefabInstance(player))
                     throw new InvalidOperationException("Player is not linked to its prefab.");
-            Debug.Log("ETERNAL_CYCLE_PREFABS_OK: linked players, background, six god pickups and preserved asset GUIDs.");
+            Debug.Log("ETERNAL_CYCLE_PREFABS_OK: linked players, background and four god power-ups.");
         }
 
         private static void Connect(GameObject instance, string path)
@@ -68,11 +67,9 @@ namespace DivineSenseEditor
 
         public static void ConfigurePickups(GameSettings settings)
         {
-            settings.HermesPickupPrefab = CreatePickup(settings, GodKind.Hermes);
-            settings.DemeterPickupPrefab = CreatePickup(settings, GodKind.Demeter);
             settings.AthenaPickupPrefab = CreatePickup(settings, GodKind.Athena);
-            settings.DionysusPickupPrefab = CreatePickup(settings, GodKind.Dionysus);
-            settings.PoseidonPickupPrefab = CreatePickup(settings, GodKind.Poseidon);
+            settings.ZeusPickupPrefab = CreatePickup(settings, GodKind.Zeus);
+            settings.HeraPickupPrefab = CreatePickup(settings, GodKind.Hera);
             settings.AresPickupPrefab = CreatePickup(settings, GodKind.Ares);
             EditorUtility.SetDirty(settings);
         }

@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 608dc30e0d114fdba52726fa62ef7f16, type: 3}
+  m_Name: TrialStory
+  m_EditorClassIdentifier:
+  opening:
+  - narration: "For centuries, the gods of Olympus have watched over the mortal world, witnessing countless wars, triumphs, and tragedies. But after thousands of years, even the most extraordinary mortal achievements have become painfully predictable. Seeking a new source of entertainment, the gods establish the Divine Colosseum, a grand arena suspended between Olympus and the Underworld, where mortals compete for divine favour and the possibility of ascending to godhood."
+    dialogue: []
+  - narration: "To select their contestants, each god nominates a mortal who has caught their attention. However, the Council quickly discovers that its members have vastly different ideas of what makes someone worthy of divinity. Unable to agree on whose nominee is most deserving, the gods decide to settle the argument through a series of trials. Two mortals are chosen to enter the Colosseum, both eager to prove themselves and curious about what awaits them."
+    dialogue: []
+  - narration: "The contestants are initially on friendly terms, seeing each other as companions rather than rivals. As they begin exploring the Colosseum, they discover traces of divine power scattered throughout the arena. These blessings offer extraordinary abilities associated with senses such as Sight, Sound, Touch, and Taste, granting the mortals a glimpse of the powers they might one day possess."
+    dialogue: []
+  - narration: "However, the contestants have yet to discover what the gods truly have planned for them. While the mortals see the trials as an opportunity to achieve something extraordinary, the gods are far more interested in whether their newest contestants can put on a good show."
+    dialogue: []
+  zeusTransition:
+  - narration: "As the two mortals make their way through the Colosseum, they begin to grow accustomed to their surroundings and newfound abilities. Their exploration is suddenly interrupted by a thunderous voice echoing throughout the arena."
+    dialogue: []
+  - narration: "Zeus, King of Olympus, has arrived to oversee the first official trial. Convinced that a true god must command admiration and loyalty, Zeus decides to test the contestants' ability to win over an audience. However, an ordinary contest would hardly satisfy the King of the Gods. With a wave of his hand, he transforms the arena and transports the mortals into a dangerous new environment, where they must compete against each other to gain followers and earn his approval."
+    dialogue: []
+  - narration: "The contestants, who had previously been helping one another, are caught off guard by the sudden change. But Zeus makes it clear that only the contestant who impresses him most will receive his favour."
+    dialogue: []
+  - narration: ""
+    dialogue:
+    - speaker: ""
+      text: "The contestants reach the end of their exploratory journey. Suddenly, thunder echoes across the Colosseum, and Zeus appears above them."
+    - speaker: "ZEUS"
+      text: "Well, well, well! Look who's finally arrived. I was beginning to think we'd chosen the wrong mortals."
+    - speaker: "CONTESTANT 1"
+      text: "Chosen us for what, exactly?"
+    - speaker: "ZEUS"
+      text: "Why, the Trials of Ascension, of course! Did nobody explain this to you?"
+    - speaker: "CONTESTANT 2"
+      text: "Not particularly."
+  - narration: ""
+    dialogue:
+    - speaker: "ZEUS"
+      text: "Hm. An administrative oversight. No matter!"
+    - speaker: ""
+      text: "Zeus gestures toward the contestants."
+    - speaker: "ZEUS"
+      text: "You've had your time to explore. Now, let's see whether either of you has what it takes to become something greater."
+    - speaker: "CONTESTANT 1"
+      text: "So, what do we have to do?"
+  - narration: ""
+    dialogue:
+    - speaker: "ZEUS"
+      text: "A true god commands loyalty! Admiration! The devotion of countless followers!"
+    - speaker: "CONTESTANT 2"
+      text: "Right... and how are we supposed to do that?"
+    - speaker: "ZEUS"
+      text: "By competing, naturally."
+    - speaker: "CONTESTANT 1"
+      text: "Against who?"
+  - narration: ""
+    dialogue:
+    - speaker: ""
+      text: "Zeus looks between the two contestants."
+    - speaker: "ZEUS"
+      text: "Each other."
+    - speaker: ""
+      text: "The contestants exchange a confused glance."
+    - speaker: "CONTESTANT 2"
+      text: "But we've been working together."
+    - speaker: "ZEUS"
+      text: "How charming. Unfortunately, friendship doesn't make for particularly exciting competition."
+  - narration: ""
+    dialogue:
+    - speaker: ""
+      text: "Zeus raises his lightning bolt. The arena begins to shift, revealing a towering vertical course."
+    - speaker: "ZEUS"
+      text: "Win over the crowd. Gather more followers than your opponent. And perhaps you'll earn my divine approval."
+    - speaker: "CONTESTANT 1"
+      text: "And if we don't?"
+    - speaker: "ZEUS"
+      text: "Well, that's what makes it interesting, isn't it?"
+    - speaker: ""
+      text: "Lightning strikes. The contestants are transported into the new arena."
+    - speaker: "ZEUS"
+      text: "Let the first trial begin!"
+  athenaTransition:
+  - narration: ""
+    dialogue:
+    - speaker: ""
+      text: "The competitive trial ends. The contestants catch their breath as the crowd cheers."
+    - speaker: "ZEUS"
+      text: "Spectacular! The ambition! The rivalry! The desperation for approval! A truly excellent display of divine potential."
+    - speaker: "ATHENA"
+      text: "An entertaining display, certainly. But I'm not convinced we've learned very much."
+    - speaker: "ZEUS"
+      text: "We learned who won."
+    - speaker: "ATHENA"
+      text: "And does winning a popularity contest make someone worthy of godhood?"
+  - narration: ""
+    dialogue:
+    - speaker: "ZEUS"
+      text: "It certainly helps."
+    - speaker: "ATHENA"
+      text: "A god must know more than how to command attention. Power without judgment is hardly something Olympus needs more of."
+    - speaker: ""
+      text: "Zeus raises an eyebrow."
+    - speaker: "ZEUS"
+      text: "Was that directed at someone?"
+    - speaker: "ATHENA"
+      text: "Not exclusively."
+  - narration: ""
+    dialogue:
+    - speaker: ""
+      text: "Athena turns toward the contestants."
+    - speaker: "ATHENA"
+      text: "You've demonstrated what you can accomplish individually. Now, I want to see what you can accomplish together."
+    - speaker: "CONTESTANT 1"
+      text: "Wait. Together?"
+    - speaker: "CONTESTANT 2"
+      text: "You mean we're not competing anymore?"
+    - speaker: "ATHENA"
+      text: "Your next trial requires cooperation. Neither of you possesses every strength needed to succeed alone."
+  - narration: ""
+    dialogue:
+    - speaker: "CONTESTANT 1"
+      text: "So we can actually help each other again?"
+    - speaker: "ATHENA"
+      text: "Certainly. Though whether you choose to trust each other is another matter."
+    - speaker: "ZEUS"
+      text: "And what about the competition?"
+    - speaker: "ATHENA"
+      text: "I never said it was over."
+  - narration: ""
+    dialogue:
+    - speaker: ""
+      text: "The contestants exchange a glance."
+    - speaker: "CONTESTANT 2"
+      text: "Well, at least we know how to work together."
+    - speaker: "CONTESTANT 1"
+      text: "As long as you don't try to steal all the glory."
+    - speaker: "CONTESTANT 2"
+      text: "No promises."
+  - narration: ""
+    dialogue:
+    - speaker: ""
+      text: "Athena raises her spear, transforming the arena into a new course filled with interconnected obstacles."
+    - speaker: "ATHENA"
+      text: "Then let us see whether your ambition is matched by your wisdom."
+    - speaker: ""
+      text: "The contestants turn toward the new challenge."
+  - narration: "The first trial concludes, leaving the contestants exhausted after being forced to compete against one another. Zeus is delighted by the spectacle, praising their ambition and determination to gain the crowd's favour. However, Athena, goddess of wisdom and strategy, questions whether popularity and individual success are enough to determine someone's worthiness."
+    dialogue: []
+  - narration: "Having watched the contestants acquire and use their divine abilities, Athena proposes a different challenge. Rather than testing how effectively the mortals can outperform one another, she wants to discover whether they can recognize each other's strengths and cooperate to overcome obstacles."
+    dialogue: []
+  - narration: "Under Athena's direction, the arena transforms once again, revealing a new course within the Colosseum that neither contestant can complete entirely alone. Although their previous competition has created some tension, the mortals are relieved to have an opportunity to work together again."
+    dialogue: []
+  - narration: "However, cooperation does not eliminate competition. The gods continue to judge their individual performances, and opportunities to gain an advantage over one another remain."
+    dialogue: []

@@ -1,5 +1,4 @@
 using System.IO;
-using System.Linq;
 using DivineSense;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -10,9 +9,8 @@ public static class DivineSenseBuilder {
  const string Folder="Assets/DivineSense";
  static Sprite square,circle;
  static Color gold=new Color(1,.83f,.38f), red=new Color(.95f,.3f,.36f);
- [MenuItem("Divine-Sense/Build New Arena")]
  public static void Build(){
- Directory.CreateDirectory("Assets/Prefabs/EternalCycle/Arena");Directory.CreateDirectory(Folder+"/Settings");
+ Directory.CreateDirectory("Assets/Prefabs/EternalCycle/Arena");Directory.CreateDirectory(Folder+"/Settings");Directory.CreateDirectory("Assets/Scenes/Archive");
  square=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Prefabs/EternalCycle/Art/Prototype/RoundedSquare.png");circle=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Prefabs/EternalCycle/Art/Prototype/Circle.png");
  var settings=AssetDatabase.LoadAssetAtPath<GameSettings>(Folder+"/Settings/ArenaSettings.asset");
  if(!settings){settings=ScriptableObject.CreateInstance<GameSettings>();AssetDatabase.CreateAsset(settings,Folder+"/Settings/ArenaSettings.asset");}
@@ -25,8 +23,7 @@ public static class DivineSenseBuilder {
  var world=managers.AddComponent<SceneModeController>();world.Session=session;world.Camera=cam;session.World=world;
  var swap=managers.AddComponent<AbilitySwapEffect>();swap.Session=session;session.Swap=swap;
  var pos=managers.AddComponent<PositionSwapEffect>();pos.Session=session;
- var growth=managers.AddComponent<GrowthEffect>();var reverse=managers.AddComponent<ReverseControlsEffect>();
- var gods=managers.AddComponent<GodDirector>();gods.Session=session;gods.PositionSwap=pos;gods.Growth=growth;gods.AbilitySwap=swap;gods.Reverse=reverse;gods.PickupsRoot=new GameObject("GodPickupsRoot").transform;
+ var gods=managers.AddComponent<GodDirector>();gods.Session=session;gods.PickupsRoot=new GameObject("GodPickupsRoot").transform;
  var spawn=managers.AddComponent<PlatformSpawner>();spawn.Session=session;spawn.Root=new GameObject("PlatformsRoot").transform;
  registry.Players=new[]{Player(0,session,registry),Player(1,session,registry)};
  var setup=managers.AddComponent<MatchSetupController>();setup.Session=session;
@@ -40,8 +37,7 @@ public static class DivineSenseBuilder {
  PrefabUtility.SaveAsPrefabAssetAndConnect(bg.gameObject,"Assets/Prefabs/EternalCycle/Arena/Colosseum.prefab",InteractionMode.AutomatedAction);
  // Broad starting support; generated route continues above it.
  var start=(GameObject)PrefabUtility.InstantiatePrefab(settings.PlatformPrefab,spawn.Root);start.name="Starting Dais";start.transform.position=new Vector3(0,-5,0);start.transform.localScale=new Vector3(9,.4f,1);start.GetComponent<PlatformScroller>().Session=session;foreach(var f in start.GetComponentsInChildren<FollowerCollectible>())f.Session=session;
- EditorSceneManager.SaveScene(scene,"Assets/Scenes/DivineSense_Arena.unity");
- var entries=EditorBuildSettings.scenes.Where(s=>s.path!="Assets/Scenes/DivineSense_Arena.unity").ToList();entries.Add(new EditorBuildSettingsScene("Assets/Scenes/DivineSense_Arena.unity",true));EditorBuildSettings.scenes=entries.ToArray();
+ EditorSceneManager.SaveScene(scene,"Assets/Scenes/Archive/DivineSense_Arena.unity");
  AssetDatabase.SaveAssets();Debug.Log("DIVINE_SENSE_BUILD_OK");
  }
  static GameObject Platform(bool crumble){

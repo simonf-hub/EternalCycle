@@ -5,16 +5,11 @@ namespace DivineSense
 {
     public sealed class GodDirector : MonoBehaviour
     {
-        // Keep enum IDs stable for serialized assets; Zeus no longer enters this pool.
         private static readonly GodKind[] PickupGods =
-            { GodKind.Hermes, GodKind.Demeter, GodKind.Athena, GodKind.Dionysus, GodKind.Poseidon, GodKind.Ares };
+            { GodKind.Athena, GodKind.Zeus, GodKind.Hera, GodKind.Ares };
 
         public GameSession Session;
         public Transform PickupsRoot;
-        public PositionSwapEffect PositionSwap;
-        public GrowthEffect Growth;
-        public AbilitySwapEffect AbilitySwap;
-        public ReverseControlsEffect Reverse;
         public string Cue = "THE COLOSSEUM AWAITS";
         private float nextAt;
         private int previous = -1;
@@ -42,33 +37,24 @@ namespace DivineSense
             Intervened?.Invoke(kind);
         }
 
-        private string Description(GodKind kind) => kind == GodKind.Hermes ? "POSITION SWAP" :
-            kind == GodKind.Demeter ? "GROWTH" : kind == GodKind.Athena ? "ABILITY SWAP" :
-            kind == GodKind.Dionysus ? "OPPONENT CONTROLS REVERSED" :
-            kind == GodKind.Poseidon ? "PULL OPPONENT TOWARD YOU" : "HOMING BOMB — FREEZE FOR 3s";
+        private static string Description(GodKind kind) => kind switch
+        {
+            GodKind.Athena => "SWAP POSITIONS",
+            GodKind.Zeus => "GROW, JUMP HIGHER, AND BECOME IMMUNE TO SIGHT AND SOUND",
+            GodKind.Hera => "PULL THE OTHER MORTAL TOWARD YOU",
+            GodKind.Ares => "LAUNCH A HOMING BOMB",
+            _ => string.Empty
+        };
 
         private void Drop(GodKind kind)
         {
             Rect bounds = Session.World.VisibleBounds;
-            GameObject gift = Instantiate(Session.Settings.PickupPrefabFor(kind),
+            GameObject prefab = Session.Settings.PickupPrefabFor(kind);
+            GameObject gift = Instantiate(prefab,
                 new Vector3(UnityEngine.Random.Range(bounds.xMin + 1, bounds.xMax - 1),
                     bounds.yMax - Session.Settings.PickupSpawnInset, 0), Quaternion.identity, PickupsRoot);
             GodPickup pickup = gift.GetComponent<GodPickup>();
-            pickup.Session = Session;
-            pickup.Kind = kind;
-            pickup.Effect = collector =>
-            {
-                switch (kind)
-                {
-                    case GodKind.Poseidon: PullOpponentEffect.Apply(collector); break;
-                    case GodKind.Ares: HomingBomb.Launch(collector, PickupsRoot); break;
-                    case GodKind.Hermes: PositionSwap.Apply(); break;
-                    case GodKind.Demeter: Growth.Apply(collector); break;
-                    case GodKind.Athena: AbilitySwap.Apply(); break;
-                    case GodKind.Dionysus: Reverse.Apply(collector.Registry.Opponent(collector)); break;
-                }
-            };
-            pickup.RefreshAppearance();
+            pickup.BeginFalling(Session, kind, prefab == Session.Settings.GodPickupPrefab);
         }
     }
 }

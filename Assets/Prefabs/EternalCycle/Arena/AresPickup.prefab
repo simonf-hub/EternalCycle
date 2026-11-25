@@ -90,7 +90,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2493086261222153185}
-  m_Text: Medusa’s Stare
+  m_Text: Ares’s Stare
   m_OffsetZ: 0
   m_CharacterSize: 0.13
   m_LineSpacing: 1
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 673942202255117183}
   - component: {fileID: 1732500553382910433}
   m_Layer: 0
-  m_Name: Medusa’s Stare
+  m_Name: Ares’s Stare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

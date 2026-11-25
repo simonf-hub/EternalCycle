@@ -16,17 +16,19 @@ namespace DivineSense
 
         public void Activate(PlayerContext p)
         {
-            ShowWave(p.Endpoint, p.Settings.SightRadius);
-            if(p.Session.IsPuzzle) {
-                foreach(var platform in FindObjectsByType<MicroSense.HiddenPlatform>(FindObjectsSortMode.None)) {
-                    var collider=platform.GetComponent<Collider2D>();
-                    if(collider && Vector2.Distance(p.Endpoint,collider.ClosestPoint(p.Endpoint))<=p.Settings.SightRadius) platform.Reveal();
-                }
-                return;
+            Vector2 origin = p.Endpoint;
+            float radius = p.Settings.SightRadius;
+            ShowWave(origin, radius);
+            foreach (var platform in FindObjectsByType<MicroSense.HiddenPlatform>(FindObjectsSortMode.None))
+            {
+                var collider = platform.GetComponent<Collider2D>();
+                if (!platform.IsRevealed && collider && Vector2.Distance(origin, collider.ClosestPoint(origin)) <= radius)
+                    platform.Reveal();
             }
-            var target=p.Registry.Opponent(p);
-            if(target.CanAct && !target.Status.Grown && Vector2.Distance(p.Endpoint,target.Endpoint)<=p.Settings.SightRadius)
-                target.Status.HiddenUntil=p.Session.Now+p.Settings.SightDuration;
+
+            var target = p.Registry.Opponent(p);
+            if (target.CanAct && !target.Status.Grown && Vector2.Distance(origin, target.Endpoint) <= radius)
+                target.Status.HiddenUntil = p.Session.Now + p.Settings.SightDuration;
         }
 
         private void ShowWave(Vector2 origin, float radius)

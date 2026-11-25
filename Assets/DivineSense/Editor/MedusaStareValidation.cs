@@ -9,7 +9,7 @@ namespace DivineSenseEditor {
  public static class MedusaStareValidation {
   static bool runtime; static double started; static int stage; static float hitAt,initialY; static PlayerContext player;
   [InitializeOnLoadMethod] static void Resume(){if(SessionState.GetBool("StareValidation",false)){started=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;}}
-  public static void Run(){SessionState.SetBool("StareValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
+  public static void Run(){SessionState.SetBool("StareValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
   static void Check(bool ok,string message){if(!ok)throw new Exception(message);}
   public static void Tick(){try{
    if(EditorApplication.timeSinceStartup-started>60)throw new Exception("Stare validation timed out");

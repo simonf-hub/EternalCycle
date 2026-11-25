@@ -7,7 +7,7 @@ namespace DivineSenseEditor {
  public static class DivineSensePuzzleValidation {
   static int stage; static double started;
   [InitializeOnLoadMethod] static void Resume(){if(SessionState.GetBool("PuzzleValidation",false)){started=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;}}
-  public static void Run(){SessionState.SetBool("PuzzleValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
+  public static void Run(){SessionState.SetBool("PuzzleValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
   static void Check(bool condition,string message){if(!condition)throw new Exception(message);}
   static void Tick(){try{
    if(EditorApplication.timeSinceStartup-started>90)throw new Exception("Puzzle integration validation timed out");

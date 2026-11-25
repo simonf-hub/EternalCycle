@@ -375,10 +375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DivineSense.GodDirector
   Session: {fileID: 1379657198}
   PickupsRoot: {fileID: 1545730905}
-  PositionSwap: {fileID: 1379657196}
-  Growth: {fileID: 1379657195}
-  AbilitySwap: {fileID: 1379657194}
-  Reverse: {fileID: 1379657193}
   Cue: THE COLOSSEUM AWAITS
 --- !u!114 &1379657193
 MonoBehaviour:
@@ -455,6 +451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75fbed0f0e8f14fcb8c2ab6d5b6af598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DivineSense.GameSession
+  Trial: 0
   Settings: {fileID: 11400000, guid: 536ede43b5ce5440782b3b60eca2487b, type: 2}
   Registry: {fileID: 1379657200}
   World: {fileID: 1379657199}
@@ -503,6 +500,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DivineSense.PlatformSpawner
   Session: {fileID: 1379657198}
   Root: {fileID: 296179073}
+  GeneratePlatforms: 1
 --- !u!4 &1379657202
 Transform:
   m_ObjectHideFlags: 0

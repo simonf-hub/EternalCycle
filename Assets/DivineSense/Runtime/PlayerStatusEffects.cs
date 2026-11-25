@@ -9,7 +9,7 @@ namespace DivineSense { public sealed class PlayerStatusEffects : MonoBehaviour 
  public float FreezeRemaining=>Owner.CanAct?Mathf.Max(0,frozenUntil-Owner.Session.Now):0;
  public bool Frozen=>FreezeRemaining>0;
  public void ApplyFreeze(){
- if(!Owner.CanAct||Grown)return;
+ if(!Owner.CanAct)return;
  frozenUntil=Owner.Session.Now+BombFreezeDuration;
  Owner.Motor.StopHorizontalMotion();
  Owner.Input.DiscardActions();

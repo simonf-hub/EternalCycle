@@ -7,6 +7,8 @@ namespace DivineSense
     {
         public GameSession Session;
         public Transform Root;
+        [Tooltip("Disable to use only the platforms placed in this scene.")]
+        public bool GeneratePlatforms = true;
 
         private const float PlatformThickness = .35f;
         private const float HorizontalClearance = .25f;
@@ -34,7 +36,7 @@ namespace DivineSense
 
         public void PopulateInitialPlatforms()
         {
-            if (initialized) return;
+            if (!GeneratePlatforms || initialized) return;
             initialized = true;
             Rect bounds = Session.World.VisibleBounds;
             for (float y = bounds.yMin + 1; y < bounds.yMax + 1; y += SampleSpacing())
@@ -51,7 +53,7 @@ namespace DivineSense
 
         private void Update()
         {
-            if (!Session.IsPlaying) return;
+            if (!GeneratePlatforms || !Session.IsPlaying) return;
             bool heaven = Session.World.CurrentMode == SceneMode.Heaven;
             float frontier = heaven ? float.NegativeInfinity : float.PositiveInfinity;
             for (int i = rows.Count - 1; i >= 0; i--)

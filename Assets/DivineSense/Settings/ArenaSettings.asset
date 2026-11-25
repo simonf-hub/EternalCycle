@@ -20,18 +20,18 @@ MonoBehaviour:
   StartingFollowers: 0
   DeathLossFraction: 0.2
   SightDuration: 1.5
-  SightCooldown: 20
-  SoundCooldown: 20
+  SightCooldown: 8
+  SoundCooldown: 4
   GrowthDuration: 3
   AbilitySwapDuration: 3
   ReverseControlsDuration: 3
   SightRadius: 7
   SoundRadius: 4
-  SoundImpulse: 12
+  SoundImpulse: 16
   MoveSpeed: 6
   JumpSpeed: 12
   Gravity: 3
-  GlideSpeed: 1
+  GlideSpeed: 0.5
   GlideDashDistance: 1.5
   GlideDashDuration: 0.12
   GlideDashMaxDistance: 4
@@ -61,6 +61,10 @@ MonoBehaviour:
   GrowthSlowdown: 0.65
   MarkerSpeed: 6
   PickupFallSpeed: 2.5
+  PullImpulse: 14
+  HomingBombSpeed: 7
+  HomingBombLifetime: 6
+  HomingBombPrefab: {fileID: 5492524185304169050, guid: c93f1d3ecb834ecb9cfb6ad5a7bef00b, type: 3}
   GodPickupCount: 1
   BoundaryMargin: 0
   CullMargin: 4
@@ -71,9 +75,7 @@ MonoBehaviour:
   PlatformPrefab: {fileID: 8271459950716814210, guid: 5cd7fd0e343a840e6aba4826c2ee739d, type: 3}
   CrumblePrefab: {fileID: 7867930498635728230, guid: ed79aab93b2c640c0b6cbc3d4151e011, type: 3}
   GodPickupPrefab: {fileID: 4506978594220047120, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
-  HermesPickupPrefab: {fileID: 1730611202950663074, guid: 68f376f1c6e8d42f4acbf6d91788f9b9, type: 3}
-  DemeterPickupPrefab: {fileID: 2516146461291924162, guid: 68eca5a3b55e0473f86e066deacc5f4a, type: 3}
   AthenaPickupPrefab: {fileID: 6470697883228938087, guid: bf014c1c0cba74ed883ad6d3e1e4866d, type: 3}
-  DionysusPickupPrefab: {fileID: 7961585928390021139, guid: 1fd70c45497a44f469659a5527affeee, type: 3}
-  PoseidonPickupPrefab: {fileID: 4506978594220047120, guid: 3ede300014964818a189d956f5845893, type: 3}
   AresPickupPrefab: {fileID: 4506978594220047120, guid: 7eb8526f21514b629fa771d42f74e310, type: 3}
+  ZeusPickupPrefab: {fileID: 2516146461291924162, guid: 68eca5a3b55e0473f86e066deacc5f4a, type: 3}
+  HeraPickupPrefab: {fileID: 4506978594220047120, guid: 3ede300014964818a189d956f5845893, type: 3}

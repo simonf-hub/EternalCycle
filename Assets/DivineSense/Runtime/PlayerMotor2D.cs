@@ -4,6 +4,9 @@ namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
  public Transform BodyVisual; public GlideAbility Glide; public DoubleJumpAbility DoubleJump;
  public bool Grounded {get;private set;} bool extraUsed,jumpUsed; float impulse; Vector2 queued;
  readonly ContactPoint2D[] contacts=new ContactPoint2D[16]; float size=1;
+ Vector2 baseColliderSize;
+ Vector3 baseVisualScale;
+ void Awake(){baseColliderSize=Collider.size;baseVisualScale=BodyVisual.localScale;}
  public void Begin(){Glide.ResetAirUse();Body.simulated=true;Body.gravityScale=Owner.Settings.Gravity;}
  void FixedUpdate(){
  if(!Owner.CanAct){Glide.Cancel();DoubleJump.CancelDash();Owner.Input.ClearDashTaps();return;}
@@ -63,7 +66,16 @@ namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
          extraUsed = jumpUsed = false;
      }
  }
- public void SetSize(float scale){if(Mathf.Approximately(size,scale))return;float foot=Body.position.y-Collider.size.y*.5f;size=scale;Collider.size=new Vector2(.7f,1)*scale;BodyVisual.localScale=Vector3.one*scale;Body.position=new Vector2(Body.position.x,foot+Collider.size.y*.5f);if(scale>1)Body.position=ClearPosition(Body.position);}
+ public void SetSize(float scale)
+ {
+     if (Mathf.Approximately(size, scale)) return;
+     float foot = Body.position.y - Collider.size.y * .5f;
+     size = scale;
+     Collider.size = baseColliderSize * scale;
+     BodyVisual.localScale = baseVisualScale * scale;
+     Body.position = new Vector2(Body.position.x, foot + Collider.size.y * .5f);
+     if (scale > 1) Body.position = ClearPosition(Body.position);
+ }
  public Vector2 ClearPosition(Vector2 requested){
  var bounds=Owner.Session.World.VisibleBounds; Vector2 half=Collider.size*.5f;
  for(int i=0;i<100;i++){

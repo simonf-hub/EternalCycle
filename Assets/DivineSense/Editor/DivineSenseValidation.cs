@@ -3,33 +3,245 @@ using DivineSense;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-namespace DivineSenseEditor {
-public static class DivineSenseValidation {
- static GameSession session; static bool initialized,respawnChecked; static double start; static int gods,last=-1,flips; static bool failed;
- [InitializeOnLoadMethod] static void Resume(){if(SessionState.GetBool("DivineValidation",false)){start=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;}}
- public static void Run(){
- SessionState.SetBool("DivineValidation",true);
- Check(FollowerCounter.AfterDeath(1000,.2f)==800,"score 1000 -> 800");Check(FollowerCounter.AfterDeath(1,.2f)==0,"rounded score 1 -> 0");
- for(int previous=0;previous<4;previous++)for(int roll=0;roll<3;roll++)Check(GodDirector.ExcludingPrevious(roll,previous)!=previous,"god exclusion");
- EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");start=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;EditorApplication.isPlaying=true;
- }
- static void Check(bool ok,string name){if(!ok)throw new Exception("VALIDATION FAILED: "+name);}
- static void Tick(){try{
- if(EditorApplication.timeSinceStartup-start>100)throw new Exception("validation timeout");
- if(!EditorApplication.isPlaying||EditorApplication.isCompiling)return;
- if(!initialized && EditorApplication.timeSinceStartup-start<12)return;
- if(!initialized){session=UnityEngine.Object.FindFirstObjectByType<GameSession>();if(!session||!session.Registry.Players[0].Input)return;
- var setup=UnityEngine.Object.FindFirstObjectByType<MatchSetupController>();setup.Begin(ActiveKind.Sight,MovementKind.Touch,ActiveKind.Sound,MovementKind.Taste);
- var a=session.Registry.Players[0];var b=session.Registry.Players[1];
- a.Motor.Teleport(new Vector2(-1,-3),true);b.Motor.Teleport(new Vector2(1,-3),true);a.Abilities.TryActivateActive();Check(b.Status.Hidden&&a.Abilities.Cooldown==20,"Sight visibility and cooldown");b.Status.HiddenUntil=0;b.Status.GrownUntil=3;a.Abilities.Sight.Activate(a);Check(!b.Status.Hidden,"Growth immunity to Sight");b.Status.Clear();
- a.Score.Add(1000);a.Life.TryDie();a.Life.TryDie();Check(a.Score.Total==800,"idempotent death");
- Vector2 marker=a.Endpoint,body=b.Endpoint;UnityEngine.Object.FindFirstObjectByType<PositionSwapEffect>().Apply();Check(Vector2.Distance(a.Endpoint,body)<.01f&&Vector2.Distance(b.Endpoint,marker)<.01f,"marker position swap");
- a.HomeLoadout.ActiveReadyAt=12;b.HomeLoadout.ActiveReadyAt=4;session.Swap.Apply();Check(a.EquippedLoadout==b.HomeLoadout&&a.Abilities.Cooldown==4,"bundle reference and cooldown transfer");a.EquippedLoadout.ActiveReadyAt=20;session.Swap.Restore();Check(b.EquippedLoadout.ActiveReadyAt==20,"used cooldown returns home");
- var world=session.World;var platforms=UnityEngine.Object.FindObjectsByType<PlatformScroller>(FindObjectsSortMode.None);var before=platforms[0].transform.position;float sign=world.ScrollVelocity;world.ToggleMode();Check(world.ScrollVelocity==-sign&&platforms[0].transform.position==before,"mode reversal preserves layout");
- world.ModeChanged+=mode=>{flips++;if(session.Now<flips*session.Settings.SceneFlipInterval || session.Now>flips*session.Settings.SceneFlipInterval+.5f)failed=true;};
- var director=UnityEngine.Object.FindFirstObjectByType<GodDirector>();director.Intervened+=k=>{if((int)k==last || k==GodKind.Zeus)failed=true;last=(int)k;gods++;var gifts=director.PickupsRoot.GetComponentsInChildren<GodPickup>();if(gifts.Length<session.Settings.GodPickupCount)failed=true;};Time.timeScale=30;initialized=true;Debug.Log("DIVINE_INITIAL_CHECKS_OK");return;}
- if(session.Now>=3.2f&&!respawnChecked){Check(session.Registry.Players[0].Life.State==LifeState.Alive,"automatic respawn");respawnChecked=true;}
- if(session.State==MatchState.Finished){Check(session.Now==180,"exact round deadline");Check(gods==35&&!failed,"35 nonconsecutive god power-up drops before expiry");Check(flips==11,"eleven automatic 16-second flips, none at round end");var a=session.Registry.Players[0];int score=a.Score.Total;a.Score.Add(100);a.Life.TryDie();Check(score==a.Score.Total,"finished score frozen");Debug.Log("DIVINE_VALIDATION_OK: arithmetic, death guard, marker swap, cooldown ownership, scene reversal, respawn, 180s match, 35 god drops, eleven 16s automatic flips, frozen result");Time.timeScale=1;EditorApplication.update-=Tick;SessionState.SetBool("DivineValidation",false);EditorApplication.Exit(0);}
- }catch(Exception e){Debug.LogException(e);EditorApplication.update-=Tick;SessionState.SetBool("DivineValidation",false);EditorApplication.Exit(1);}}
-}
+using Object = UnityEngine.Object;
+
+namespace DivineSenseEditor
+{
+    public static class DivineSenseValidation
+    {
+        private static GameSession session;
+        private static double start;
+        private static float phaseStartedAt;
+        private static float deathAt;
+        private static Vector2 normalColliderSize;
+        private static int stage;
+        private static int gods;
+        private static int flips;
+        private static GodKind? lastGod;
+        private static bool failed;
+        private static bool respawnChecked;
+
+        [InitializeOnLoadMethod]
+        private static void Resume()
+        {
+            if (!SessionState.GetBool("DivineValidation", false))
+                return;
+
+            start = EditorApplication.timeSinceStartup;
+            EditorApplication.update += Tick;
+        }
+
+        public static void Run()
+        {
+            SessionState.SetBool("DivineValidation", true);
+            Check(FollowerCounter.AfterDeath(1000, .2f) == 800, "score 1000 -> 800");
+            Check(FollowerCounter.AfterDeath(1, .2f) == 0, "rounded score 1 -> 0");
+            for (int previous = 0; previous < 4; previous++)
+                for (int roll = 0; roll < 3; roll++)
+                    Check(GodDirector.ExcludingPrevious(roll, previous) != previous, "god exclusion");
+
+            EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");
+            start = EditorApplication.timeSinceStartup;
+            EditorApplication.update += Tick;
+            EditorApplication.isPlaying = true;
+        }
+
+        private static void Tick()
+        {
+            try
+            {
+                if (EditorApplication.timeSinceStartup - start > 100)
+                    throw new Exception("Validation timed out");
+
+                if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+                    return;
+
+                if (stage == 0)
+                {
+                    session = Object.FindFirstObjectByType<GameSession>();
+                    if (!session || EditorApplication.timeSinceStartup - start < 12)
+                        return;
+                    BeginPowerChecks();
+                    stage = 1;
+                    return;
+                }
+
+                float elapsed = session.Now - phaseStartedAt;
+                switch (stage)
+                {
+                    case 1 when elapsed > .1f:
+                        CheckZeusAndBeginHera();
+                        stage = 2;
+                        return;
+                    case 2 when elapsed > .1f:
+                        CheckHeraAndBeginAres();
+                        stage = 3;
+                        return;
+                    case 3 when elapsed > .5f:
+                        CheckAresAndBeginArenaSweep();
+                        stage = 4;
+                        return;
+                    case 4:
+                        CheckArenaSweep();
+                        return;
+                }
+            }
+            catch (Exception error)
+            {
+                Debug.LogException(error);
+                Exit(1);
+            }
+        }
+
+        private static void BeginPowerChecks()
+        {
+            Object.FindFirstObjectByType<MatchSetupController>()
+                .Begin(ActiveKind.Sight, MovementKind.Touch, ActiveKind.Sound, MovementKind.Taste);
+            var first = session.Registry.Players[0];
+            var second = session.Registry.Players[1];
+            normalColliderSize = second.Motor.Collider.size;
+            first.Motor.Teleport(new Vector2(-1, -3), true);
+            second.Motor.Teleport(new Vector2(1, -3), true);
+            first.Abilities.TryActivateActive();
+            Check(second.Status.Hidden && Mathf.Approximately(second.Status.HiddenUntil - session.Now, 1.5f)
+                && Mathf.Approximately(first.Abilities.Cooldown, session.Settings.SightCooldown), "Sight duration and cooldown");
+
+            second.Status.HiddenUntil = 0;
+            CollectGod(GodKind.Zeus, second);
+            Check(second.Status.Grown && Mathf.Approximately(second.Status.GrownUntil - session.Now, 3f),
+                "Zeus gives exactly three seconds of Agility");
+            Check(Mathf.Approximately(session.Settings.GrowthSlowdown, .65f), "Zeus sets 65% walk speed");
+            float grownJump = second.Motor.DoubleJump.JumpVelocity(second, false);
+            float jumpHeightRatio = Mathf.Pow(grownJump / session.Settings.JumpSpeed, 2);
+            Check(Mathf.Approximately(jumpHeightRatio, 1.5f), "Zeus raises jump height by 50%");
+
+            first.Abilities.Sight.Activate(first);
+            Check(!second.Status.Hidden, "Zeus blocks Sight");
+            first.Abilities.Sound.Activate(first);
+            phaseStartedAt = session.Now;
+        }
+
+        private static void CheckZeusAndBeginHera()
+        {
+            var second = session.Registry.Players[1];
+            Check(Vector2.Distance(second.Motor.Collider.size, normalColliderSize * 1.5f) < .01f,
+                "Zeus enlarges the player's collider by 1.5×");
+            Check(Mathf.Abs(second.Motor.Body.linearVelocity.x) < .01f, "Zeus blocks Sound knockback");
+            CollectGod(GodKind.Hera, session.Registry.Players[0]);
+            phaseStartedAt = session.Now;
+        }
+
+        private static void CheckHeraAndBeginAres()
+        {
+            var first = session.Registry.Players[0];
+            var second = session.Registry.Players[1];
+            Check(second.Motor.Body.linearVelocity.x < -1f, "Hera pulls the opponent toward the collector");
+            first.Motor.Teleport(new Vector2(-.65f, -3), true);
+            second.Motor.Teleport(new Vector2(.65f, -3), true);
+            CollectGod(GodKind.Ares, first);
+            Check(Object.FindFirstObjectByType<HomingBomb>(), "Ares immediately launches a homing projectile");
+            phaseStartedAt = session.Now;
+        }
+
+        private static void CheckAresAndBeginArenaSweep()
+        {
+            var first = session.Registry.Players[0];
+            var second = session.Registry.Players[1];
+            Check(second.Status.Frozen, "Ares projectile reaches and freezes its target");
+            second.Status.Clear();
+
+            first.Score.Add(1000);
+            first.Life.TryDie();
+            first.Life.TryDie();
+            deathAt = session.Now;
+            Check(first.Score.Total == 800, "idempotent death");
+            Vector2 marker = first.Endpoint;
+            Vector2 body = second.Endpoint;
+            CollectGod(GodKind.Athena, second);
+            Check(Vector2.Distance(first.Endpoint, body) < .01f && Vector2.Distance(second.Endpoint, marker) < .01f,
+                "Athena swaps body and respawn marker");
+
+            first.HomeLoadout.ActiveReadyAt = 12;
+            second.HomeLoadout.ActiveReadyAt = 4;
+            session.Swap.Apply();
+            Check(first.EquippedLoadout == second.HomeLoadout
+                && Mathf.Approximately(first.Abilities.Cooldown, 4 - session.Now), "bundle reference and cooldown transfer");
+            first.EquippedLoadout.ActiveReadyAt = 20;
+            session.Swap.Restore();
+            Check(second.EquippedLoadout.ActiveReadyAt == 20, "used cooldown returns home");
+
+            var world = session.World;
+            var platform = Object.FindFirstObjectByType<PlatformScroller>();
+            Vector3 before = platform.transform.position;
+            float velocity = world.ScrollVelocity;
+            world.ToggleMode();
+            Check(world.ScrollVelocity == -velocity && platform.transform.position == before,
+                "mode reversal preserves layout");
+            world.ModeChanged += _ =>
+            {
+                flips++;
+                if (session.Now < flips * session.Settings.SceneFlipInterval
+                    || session.Now > flips * session.Settings.SceneFlipInterval + .5f)
+                    failed = true;
+            };
+
+            var director = Object.FindFirstObjectByType<GodDirector>();
+            director.Intervened += kind =>
+            {
+                if (kind == lastGod || kind is not (GodKind.Athena or GodKind.Zeus or GodKind.Hera or GodKind.Ares))
+                    failed = true;
+                lastGod = kind;
+                gods++;
+                if (director.PickupsRoot.GetComponentsInChildren<GodPickup>().Length < session.Settings.GodPickupCount)
+                    failed = true;
+            };
+
+            Time.timeScale = 30;
+            Debug.Log("DIVINE_INITIAL_CHECKS_OK: Sight, Zeus growth and immunity, Hera pull, Ares hit and Athena marker swap");
+        }
+
+        private static void CheckArenaSweep()
+        {
+            var first = session.Registry.Players[0];
+            if (session.Now >= deathAt + 3.2f && !respawnChecked)
+            {
+                Check(first.Life.State == LifeState.Alive, "automatic respawn");
+                respawnChecked = true;
+            }
+            if (session.State != MatchState.Finished)
+                return;
+
+            Check(session.Now == 180, "exact round deadline");
+            Check(gods == 35 && !failed, "35 nonconsecutive canonical god power-up drops before expiry");
+            Check(flips == 11, "eleven automatic 16-second flips, none at round end");
+            int score = first.Score.Total;
+            first.Score.Add(100);
+            first.Life.TryDie();
+            Check(score == first.Score.Total, "finished score frozen");
+            Debug.Log("DIVINE_VALIDATION_OK: four gods, ability timings, respawn, 180s match and frozen result");
+            Exit(0);
+        }
+
+        private static void CollectGod(GodKind kind, PlayerContext collector)
+        {
+            GameObject gift = Object.Instantiate(session.Settings.PickupPrefabFor(kind), collector.Endpoint, Quaternion.identity);
+            var pickup = gift.GetComponent<GodPickup>();
+            Check(pickup && pickup.Kind == kind, $"prefab is configured for {kind}");
+            pickup.SendMessage("OnTriggerEnter2D", collector.Motor.Collider);
+        }
+
+        private static void Check(bool okay, string label)
+        {
+            if (!okay)
+                throw new Exception("VALIDATION FAILED: " + label);
+        }
+
+        private static void Exit(int code)
+        {
+            Time.timeScale = 1;
+            EditorApplication.update -= Tick;
+            SessionState.SetBool("DivineValidation", false);
+            EditorApplication.Exit(code);
+        }
+    }
 }

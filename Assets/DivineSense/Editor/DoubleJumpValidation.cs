@@ -9,7 +9,7 @@ namespace DivineSenseEditor {
   static double started; static int stage; static PlayerContext player;
   static readonly FieldInfo Pending=typeof(PlayerInputReader).GetField("jumpPending",BindingFlags.Instance|BindingFlags.NonPublic);
   [InitializeOnLoadMethod] static void Resume(){if(SessionState.GetBool("DoubleJumpValidation",false)){started=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;}}
-  public static void Run(){SessionState.SetBool("DoubleJumpValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
+  public static void Run(){SessionState.SetBool("DoubleJumpValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
   static void Check(bool ok,string message){if(!ok)throw new Exception(message);}
   static void PressJump(){Pending.SetValue(player.Input,true);player.Motor.SendMessage("FixedUpdate");}
   static void CheckTwoJumps(){

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 namespace DivineSense {
 [CreateAssetMenu(menuName="Divine-Sense/Game Settings")]
 public sealed class GameSettings : ScriptableObject {
@@ -6,10 +7,10 @@ public sealed class GameSettings : ScriptableObject {
  [Min(.1f)] public float SceneFlipInterval=16;
  public int FollowerPickupValue=100, StartingFollowers=0;
  [Range(0,1)] public float DeathLossFraction=.2f;
- public float SightDuration=1.5f, SightCooldown=20, SoundCooldown=20;
+ public float SightDuration=1.5f, SightCooldown=8, SoundCooldown=4;
  public float GrowthDuration=3, AbilitySwapDuration=3, ReverseControlsDuration=3;
- public float SightRadius=7, SoundRadius=4, SoundImpulse=12;
- public float MoveSpeed=6, JumpSpeed=12, Gravity=3, GlideSpeed=1, KnockbackDecay=6;
+ public float SightRadius=7, SoundRadius=4, SoundImpulse=16;
+ public float MoveSpeed=6, JumpSpeed=12, Gravity=3, GlideSpeed=.5f, KnockbackDecay=6;
  [Header("Glide release dash")]
  [Tooltip("Minimum upward distance travelled when releasing an active glide.")]
  [Min(0)] public float GlideDashDistance=1.5f;
@@ -33,25 +34,31 @@ public sealed class GameSettings : ScriptableObject {
  [Range(0,1)] public float PlatformConnectorChance=.5f;
  public float PlatformConnectorHeight=.7f, PlatformLaneStagger=.75f;
  [Range(0,1)] public float CrumbleChance=.25f, FollowerDensity=.8f;
- [Tooltip("Jump height multiplier while Demeter growth is active, including Taste jumps.")]
+ [Tooltip("Jump height multiplier while Zeus's Agility is active, including Taste jumps.")]
  [Min(1f)] public float GrowthJumpHeightMultiplier=1.5f;
  public float GrowthScale=1.5f, GrowthSlowdown=.65f, MarkerSpeed=6, PickupFallSpeed=2.5f;
- [Header("Combat pickups")]
+ [Header("God power-ups")]
  [Min(0)] public float PullImpulse=14;
  [Min(.1f)] public float HomingBombSpeed=7, HomingBombLifetime=6;
+ public HomingBomb HomingBombPrefab;
 
- public GameObject PoseidonPickupPrefab, AresPickupPrefab;
  public int GodPickupCount=1;
  public float BoundaryMargin=0, CullMargin=4, PickupSpawnInset=1;
  public SceneMode InitialSceneMode=SceneMode.Heaven;
  public Sprite PlatformSprite, CircleSprite;
  public GameObject PlatformPrefab, CrumblePrefab, GodPickupPrefab;
- public GameObject HermesPickupPrefab, DemeterPickupPrefab, AthenaPickupPrefab, DionysusPickupPrefab;
+ public GameObject AthenaPickupPrefab, AresPickupPrefab;
+ [FormerlySerializedAs("DemeterPickupPrefab")] public GameObject ZeusPickupPrefab;
+ [FormerlySerializedAs("PoseidonPickupPrefab")] public GameObject HeraPickupPrefab;
  public GameObject PickupPrefabFor(GodKind kind) {
- if(kind==GodKind.Poseidon)return PoseidonPickupPrefab?PoseidonPickupPrefab:GodPickupPrefab;
- if(kind==GodKind.Ares)return AresPickupPrefab?AresPickupPrefab:GodPickupPrefab;
- var prefab=kind==GodKind.Hermes?HermesPickupPrefab:kind==GodKind.Demeter?DemeterPickupPrefab:kind==GodKind.Athena?AthenaPickupPrefab:DionysusPickupPrefab;
- return prefab?prefab:GodPickupPrefab;
+ var prefab = kind switch {
+     GodKind.Athena or GodKind.Hermes => AthenaPickupPrefab,
+     GodKind.Zeus or GodKind.Demeter => ZeusPickupPrefab,
+     GodKind.Hera or GodKind.Poseidon => HeraPickupPrefab,
+     GodKind.Ares => AresPickupPrefab,
+     _ => null
+ };
+ return prefab ? prefab : GodPickupPrefab;
  }
  void OnValidate() {
  GlideDashDistance=Mathf.Max(0,GlideDashDistance);GlideDashDuration=Mathf.Max(.01f,GlideDashDuration);

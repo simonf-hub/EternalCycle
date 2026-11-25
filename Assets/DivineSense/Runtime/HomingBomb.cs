@@ -17,17 +17,24 @@ namespace DivineSense
             if (!collector || !collector.CanAct) return;
             PlayerContext opponent = collector.Registry.Opponent(collector);
             if (!opponent || !opponent.CanAct) return;
-            var bombObject = new GameObject(GodPickup.DisplayName(GodKind.Ares) + " Homing Bomb");
-            bombObject.transform.SetParent(parent, false);
-            bombObject.transform.position = collector.Endpoint;
-            var bomb = bombObject.AddComponent<HomingBomb>();
+            var prefab = collector.Settings.HomingBombPrefab;
+            var bomb = prefab
+                ? Instantiate(prefab, collector.Endpoint, Quaternion.identity, parent)
+                : CreateDefault(collector, parent);
             bomb.session = collector.Session;
             bomb.target = opponent;
             bomb.expiresAt = bomb.session.Now + Mathf.Max(.1f, collector.Settings.HomingBombLifetime);
             bomb.direction = (opponent.Endpoint - collector.Endpoint).normalized;
             if (bomb.direction.sqrMagnitude < .01f)
                 bomb.direction = collector.Id == 0 ? Vector2.right : Vector2.left;
+            bomb.AddDefaultTrail();
+        }
 
+        private static HomingBomb CreateDefault(PlayerContext collector, Transform parent)
+        {
+            var bombObject = new GameObject("Ares Homing Bomb");
+            bombObject.transform.SetParent(parent, false);
+            bombObject.transform.position = collector.Endpoint;
             var sprite = bombObject.AddComponent<SpriteRenderer>();
             sprite.sprite = collector.Settings.CircleSprite;
             sprite.color = GodPickup.PickupColor(GodKind.Ares);
@@ -39,9 +46,16 @@ namespace DivineSense
                 bombObject.transform.localScale = new Vector3(Radius * 2 / Mathf.Max(.01f, size.x),
                     Radius * 2 / Mathf.Max(.01f, size.y), 1);
             }
-            bomb.trailMaterial = new Material(Shader.Find("Sprites/Default"));
-            var trail = bombObject.AddComponent<TrailRenderer>();
-            trail.sharedMaterial = bomb.trailMaterial;
+            return bombObject.AddComponent<HomingBomb>();
+        }
+
+        private void AddDefaultTrail()
+        {
+            if (GetComponentInChildren<TrailRenderer>(true)) return;
+
+            trailMaterial = new Material(Shader.Find("Sprites/Default"));
+            var trail = gameObject.AddComponent<TrailRenderer>();
+            trail.sharedMaterial = trailMaterial;
             trail.time = .3f;
             trail.startWidth = Radius;
             trail.endWidth = 0;
@@ -73,8 +87,7 @@ namespace DivineSense
             }
             transform.position = position + direction * distance;
             if (!hit) return;
-            if (!target.Status.Grown)
-                target.Status.ApplyFreeze();
+            target.Status.ApplyFreeze();
             Destroy(gameObject);
         }
 

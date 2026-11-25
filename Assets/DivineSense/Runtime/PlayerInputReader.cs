@@ -28,17 +28,19 @@ namespace DivineSense { public sealed class PlayerInputReader : MonoBehaviour {
  respawn=new InputActionMap(first?"P1Respawn":"P2Respawn");var marker=respawn.AddAction("MoveMarker",InputActionType.Value);
  marker.AddCompositeBinding("2DVector").With("Left","<Keyboard>/"+l).With("Right","<Keyboard>/"+r).With("Up","<Keyboard>/"+u).With("Down","<Keyboard>/"+d);
  move.AddBinding("<Gamepad>/leftStick/x").WithProcessor("axisDeadzone");
- move.AddBinding("<Gamepad>/dpad/x");
  move.AddBinding("<Joystick>/stick/x").WithProcessor("axisDeadzone");
- move.AddBinding("<Joystick>/hat/x");
  jump.AddBinding("<Joystick>/trigger");
  ability.AddBinding("<Joystick>/button2");
  marker.AddBinding("<Joystick>/stick");
- marker.AddBinding("<Joystick>/hat");
  jump.AddBinding("<Gamepad>/buttonSouth");
  ability.AddBinding("<Gamepad>/buttonEast");
  marker.AddBinding("<Gamepad>/leftStick");
+ if(!Owner.Session||Owner.Session.Trial==TrialLevel.Prototype){
+ move.AddBinding("<Gamepad>/dpad/x");
+ move.AddBinding("<Joystick>/hat/x");
+ marker.AddBinding("<Joystick>/hat");
  marker.AddBinding("<Gamepad>/dpad");
+ }
  move.performed += ReadDashTap;
  move.canceled += ReadDashTap;
  RefreshDevices();

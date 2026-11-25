@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 673942202255117183, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
       propertyPath: Kind
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2128040915834574040, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
       propertyPath: m_LocalPosition.x
@@ -54,11 +54,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4506978594220047120, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
       propertyPath: m_Name
-      value: Hermes’ Agility
+      value: Zeus’s Agility
       objectReference: {fileID: 0}
     - target: {fileID: 6626996884427894742, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
       propertyPath: m_Text
-      value: Hermes’ Agility
+      value: Zeus’s Agility
       objectReference: {fileID: 0}
     - target: {fileID: 8758001802506491622, guid: 7b406fb35693f44f9b6b5f20337add29, type: 3}
       propertyPath: m_Color.r

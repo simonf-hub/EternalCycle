@@ -6,23 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Level_0.unity
+    guid: 14f48a3d0845c4190884c128b0580ad3
+  - enabled: 1
     path: Assets/Scenes/Level_1.unity
-    guid: ab23769697b1846a6912f49782a86b3c
+    guid: 1a5cff2a6f194f39a1c822f1889b6a64
   - enabled: 1
     path: Assets/Scenes/Level_2.unity
-    guid: 3dad44357e8ba4187a18a53503395885
-  - enabled: 1
-    path: Assets/Scenes/Level_3.unity
-    guid: ec8a6a43f307f4328be0bf0572f3cd5c
-  - enabled: 1
-    path: Assets/Scenes/Level_4.unity
-    guid: bc678d9e15d0f47af81ce1097f9299ec
-  - enabled: 1
-    path: Assets/Scenes/DivineSense_Arena.unity
-    guid: 4da7fd435939841e89b62cef53e23e59
-  - enabled: 1
-    path: Assets/Scenes/DivineSense_Puzzle_1.unity
-    guid: 9bcf6933e61084f2eb8f1a7efdb31b41
+    guid: b56406211929a48dd913dfd6a0bba08d
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

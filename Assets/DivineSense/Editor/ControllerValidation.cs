@@ -25,7 +25,7 @@ namespace DivineSenseEditor
         public static void Run()
         {
             SessionState.SetBool("ControllerValidation", true);
-            EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");
+            EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");
             EditorApplication.isPlaying = true;
         }
         private static void Attach()

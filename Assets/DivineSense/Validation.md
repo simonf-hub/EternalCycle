@@ -1,4 +1,13 @@
-# Validation results — 14 November 2026
+# Campaign validation — 21 November 2026
+
+Unity 6000.6.7f1 compiled the campaign and generated its editable scenes and prefabs.
+
+- `DivineSenseEditor.FinalCampaignValidation.Run` passed in batch Play Mode. It covered the exact build order, story transitions, simulated A/B and left stick input, D-pad exclusion, the four tutorial gifts, the arena’s Sight and Sound fixtures, the timed round and results, checkpoint recovery, co-op gates and exits, and replay.
+- `DivineSenseEditor.DivineSenseValidation.Run` passed in batch Play Mode. It covered all four god gifts, shared ability effects and timings, Athena’s marker swap, automatic respawn, Heaven/Hell flips, and a full accelerated 180-second arena match.
+
+The automated run moved players between puzzle stations to check their behavior. It did not measure traversal feel, timing, or difficulty with two human players.
+
+## Archived prototype validation — 14 November 2026
 
 Unity 6000.6.7f1; existing Input System 1.20.1 and URP 17.6.0 preserved.
 
@@ -25,7 +34,7 @@ Human keyboard input, jump/glide feel, knockback on ledges, crumble timing under
 
 ## Changed-file inventory
 
-New arena: `Assets/Scenes/DivineSense_Arena.unity`.
+Prototype arena: `Assets/Scenes/Archive/DivineSense_Arena.unity`.
 New tuning asset: `Assets/DivineSense/Settings/ArenaSettings.asset`.
 New friction material: `Assets/DivineSense/Settings/PlayerPhysics.physicsMaterial2D`.
 New prefabs: `Assets/DivineSense/Prefabs/{Angel,Devil,Platform,CrumblingPlatform,GodPickup}.prefab`.

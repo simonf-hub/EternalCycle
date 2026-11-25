@@ -21,7 +21,7 @@ namespace DivineSenseEditor
    InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
    EditorApplication.update+=Attach;
   }}
-  public static void Run(){SessionState.SetBool("WirelessValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
+  public static void Run(){SessionState.SetBool("WirelessValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
   static void Attach(){if(!EditorApplication.isPlaying||EditorApplication.isCompiling)return;EditorApplication.update-=Attach;new GameObject("Wireless HID Validation").AddComponent<WirelessControllerValidationRunner>();}
  }
  [StructLayout(LayoutKind.Explicit,Size=8)]

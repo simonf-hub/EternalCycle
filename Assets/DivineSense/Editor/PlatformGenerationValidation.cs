@@ -7,7 +7,7 @@ namespace DivineSenseEditor {
  public static class PlatformGenerationValidation {
   static double started; static bool begun; static int checks; static int stoppedCount=-1;
   [InitializeOnLoadMethod] static void Resume(){if(SessionState.GetBool("PlatformValidation",false)){started=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;}}
-  public static void Run(){SessionState.SetBool("PlatformValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
+  public static void Run(){SessionState.SetBool("PlatformValidation",true);EditorSceneManager.OpenScene("Assets/Scenes/Archive/DivineSense_Arena.unity");EditorApplication.isPlaying=true;}
   static void Check(bool ok,string message){if(!ok)throw new Exception(message);}
   static void Tick(){try{
    if(EditorApplication.timeSinceStartup-started>100)throw new Exception("Platform validation timed out");
