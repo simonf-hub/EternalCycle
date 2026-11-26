@@ -7,6 +7,7 @@ namespace MicroSense
     {
         [SerializeField] private Collider2D _solidCollider;
         [SerializeField] private SpriteRenderer[] _visuals;
+        [SerializeField] private GameObject _attachedContent;
 
         public bool IsBroken { get; private set; }
 
@@ -45,6 +46,11 @@ namespace MicroSense
             if (_solidCollider != null)
             {
                 _solidCollider.enabled = !broken;
+            }
+
+            if (_attachedContent != null)
+            {
+                _attachedContent.SetActive(!broken);
             }
 
             if (_visuals == null)

@@ -402,6 +402,7 @@ MonoBehaviour:
   Registry: {fileID: 1379657200}
   World: {fileID: 1379657199}
   Swap: {fileID: 0}
+  crumbleDelayOverride: 0.5
 --- !u!114 &1379657199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +449,11 @@ MonoBehaviour:
   Session: {fileID: 1379657198}
   Root: {fileID: 296179073}
   GeneratePlatforms: 1
+  startingDais: {fileID: 1845578994}
+  rowSpacingOverride: 3.15
+  hiddenPlatformPrefab: {fileID: 1331502242398496038, guid: c33f47fe36f204ecd897c5a26715b81c, type: 3}
+  soundBreakablePlatformPrefab: {fileID: 6913803642335284219, guid: cbe562cdd8e248e3a6043677d026649e, type: 3}
+  followerPrefab: {fileID: 5492524185304169050, guid: b617c3f2f49a94885ae4574910f75411, type: 3}
 --- !u!4 &1379657202
 Transform:
   m_ObjectHideFlags: 0

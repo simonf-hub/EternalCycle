@@ -47,11 +47,13 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
  GUI.color=new Color(.025f,.035f,.065f,.92f);GUI.DrawTexture(new Rect(0,0,1280,105),panel);GUI.color=Color.white;
  GUI.Label(new Rect(0,8,1280,36),"DIVINE-SENSE   /   "+Session.World.CurrentMode,title);
  GUI.Label(new Rect(480,49,320,35),Mathf.CeilToInt(Mathf.Max(0,Session.Settings.RoundDuration-Session.Now))+"s   •   FLIP IN "+Mathf.CeilToInt(Session.World.FlipRemaining)+"s",text);
+ if(Session.Trial==TrialLevel.Arena)
+     GUI.Label(new Rect(390,81,500,20),$"Orange crumbles {Session.Settings.CrumbleDelay:0.##}s after landing · Sound breaks cyan",small);
  for(int i=0;i<2;i++){var p=Session.Registry.Players[i];var scoreRect=FollowerLabelRect(i);float x=scoreRect.x;if(!Session.IsShowingResults){GUI.color=FollowerColor(i);GUI.Label(scoreRect,ContestantName(i)+"   "+p.Score.Total+" followers",text);GUI.color=Color.white;}if(p.EquippedLoadout!=null)GUI.Label(new Rect(x,44,365,28),p.EquippedLoadout.ActiveKind+" "+(p.Abilities.Cooldown>0?Mathf.CeilToInt(p.Abilities.Cooldown)+"s":"READY")+" / "+p.EquippedLoadout.MovementKind,small);GUI.Label(new Rect(x,72,365,22),p.Life.State==LifeState.RespawnPlacement?"PLACE CROSS: "+p.Respawn.Remaining.ToString("0.0")+"s":p.Status.Grown?"AGILITY • SIGHT / SOUND IMMUNE":p.Status.Reversed?"CONTROLS REVERSED":"",small);}
  GUI.color=new Color(.025f,.035f,.065f,.9f);GUI.DrawTexture(new Rect(0,730,1280,70),panel);GUI.color=Color.white;
  string controls=Session.Trial==TrialLevel.Prototype?"Stick / D-pad · A jump · B cast":"Left stick move · A jump · B cast";
  string objective=string.IsNullOrEmpty(Gods.Cue) && Session.Trial==TrialLevel.Arena
-     ?"Collect more followers than your opponent":Gods.Cue;
+     ?"Race for followers · Sight reveals bridges · Sound breaks cyan platforms":Gods.Cue;
  GUI.Label(new Rect(0,733,1280,26),objective,text);
  GUI.Label(new Rect(0,765,1280,25),$"Mortal 1  A/D move · W jump · S cast    |    Mortal 2  ←/→ move · ↑ jump · ↓ cast    |    {controls}",small);
  if(Session.Trial==TrialLevel.Prototype && Session.State==MatchState.Setup){

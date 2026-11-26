@@ -185,13 +185,7 @@ namespace DivineSenseEditor
 
             milestone = "timed arena results";
             GameSession arena = CheckScene("Level_1", TrialLevel.Arena, playing: true);
-            var hidden = FindAnyObjectByType<MicroSense.HiddenPlatform>();
-            var cracked = FindAnyObjectByType<MicroSense.BreakablePlatform>();
-            FinalCampaignValidation.Require(hidden && cracked, "The arena needs Sight and Sound fixtures.");
-            arena.Registry.Players[0].Abilities.Sight.Activate(arena.Registry.Players[0]);
-            arena.Registry.Players[1].Abilities.Sound.Activate(arena.Registry.Players[1]);
-            FinalCampaignValidation.Require(hidden.IsRevealed && cracked.IsBroken,
-                "Sight and Sound should affect arena fixtures from the starting dais.");
+            CheckArenaObstacles(arena);
             FinalCampaignValidation.Require(arena.Settings.RoundDuration > 0, "The arena timer was not configured.");
             arena.Settings.RoundDuration = arena.Now + 0.1f;
             yield return new WaitUntil(() => arena.IsShowingResults);
@@ -232,6 +226,63 @@ namespace DivineSenseEditor
                 yield return step;
             foreach (object step in CollectTutorialGifts(replay))
                 yield return step;
+        }
+
+        private static void CheckArenaObstacles(GameSession arena)
+        {
+            var spawner = arena.GetComponent<PlatformSpawner>();
+            FinalCampaignValidation.Require(spawner && spawner.Root, "The arena is missing its platform generator.");
+            var angel = arena.Registry.Players[0];
+            var devil = arena.Registry.Players[1];
+            Vector2 angelStart = angel.Endpoint;
+            Vector2 devilStart = devil.Endpoint;
+
+            var hidden = NearestFixture(spawner.Root.GetComponentsInChildren<MicroSense.HiddenPlatform>(), angelStart);
+            var breakable = NearestFixture(spawner.Root.GetComponentsInChildren<MicroSense.BreakablePlatform>(), devilStart);
+            FinalCampaignValidation.Require(hidden && breakable, "The arena generator must place both kinds of ability platform.");
+
+            var reward = hidden.GetComponentInChildren<FollowerCollectible>(true);
+            FinalCampaignValidation.Require(!hidden.IsRevealed && !hidden.IsSolid && reward &&
+                !reward.gameObject.activeInHierarchy && reward.Session == arena,
+                "A generated hidden platform must start non-solid with its follower unavailable.");
+            Place(angel, (Vector2)hidden.transform.position + Vector2.up);
+            Physics2D.SyncTransforms();
+            angel.Abilities.Sight.Activate(angel);
+            FinalCampaignValidation.Require(hidden.IsRevealed && hidden.IsSolid && reward.gameObject.activeInHierarchy,
+                "Sight must reveal the generated platform and make its follower available.");
+
+            var breakableCollider = breakable.GetComponent<Collider2D>();
+            var effector = breakable.GetComponent<PlatformEffector2D>();
+            var visual = breakable.GetComponent<SpriteRenderer>();
+            FinalCampaignValidation.Require(!breakable.IsBroken && breakableCollider && breakableCollider.enabled &&
+                !breakableCollider.isTrigger && breakableCollider.usedByEffector && effector && effector.enabled &&
+                effector.useOneWay && visual && visual.enabled, "A generated Sound platform must start as a visible one-way landing.");
+            Place(devil, (Vector2)breakable.transform.position + Vector2.up);
+            Physics2D.SyncTransforms();
+            devil.Abilities.Sound.Activate(devil);
+            FinalCampaignValidation.Require(breakable.IsBroken && !breakableCollider.enabled,
+                "Sound must remove the generated platform's support.");
+            foreach (var sprite in breakable.GetComponentsInChildren<SpriteRenderer>(true))
+                FinalCampaignValidation.Require(!sprite.enabled || !sprite.gameObject.activeInHierarchy,
+                    "Sound must hide the generated platform's visuals and attached follower.");
+
+            Place(angel, angelStart);
+            Place(devil, devilStart);
+        }
+
+        private static T NearestFixture<T>(T[] fixtures, Vector2 origin) where T : Component
+        {
+            T nearest = null;
+            float distance = float.PositiveInfinity;
+            foreach (var fixture in fixtures)
+            {
+                float candidate = ((Vector2)fixture.transform.position - origin).sqrMagnitude;
+                if (candidate >= distance)
+                    continue;
+                nearest = fixture;
+                distance = candidate;
+            }
+            return nearest;
         }
 
         private static IEnumerable<object> ClearCooperativeLayout(GameSession session)

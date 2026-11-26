@@ -20,6 +20,8 @@ namespace DivineSense
         public PlayerRegistry Registry;
         public SceneModeController World;
         public AbilitySwapEffect Swap;
+        [SerializeField, Min(0f), Tooltip("Seconds from landing to crumble. Zero uses the shared settings.")]
+        private float crumbleDelayOverride;
 
         public MatchState State { get; private set; }
         public bool IsPlaying => State == MatchState.Playing;
@@ -40,6 +42,8 @@ namespace DivineSense
         private void Awake()
         {
             Settings = Instantiate(Settings);
+            if (crumbleDelayOverride > 0f)
+                Settings.CrumbleDelay = crumbleDelayOverride;
             if (Trial != TrialLevel.Prototype)
                 story = Resources.Load<TrialStory>("TrialStory");
         }

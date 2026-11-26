@@ -10,6 +10,7 @@ namespace MicroSense
         [SerializeField, Range(0f, 1f)] private float _hiddenAlpha;
 
         private Color _revealedColor;
+        private GameObject _revealContent;
 
         public bool IsRevealed { get; private set; }
         public bool IsSolid => _platformCollider != null && !_platformCollider.isTrigger;
@@ -44,6 +45,12 @@ namespace MicroSense
             ApplyState();
         }
 
+        public void SetRevealContent(GameObject content)
+        {
+            _revealContent = content;
+            ApplyRevealContentState();
+        }
+
         public void ResetPlatform()
         {
             IsRevealed = false;
@@ -64,6 +71,16 @@ namespace MicroSense
                 // The trigger remains raycast-detectable while players pass through it.
                 _platformCollider.enabled = true;
                 _platformCollider.isTrigger = !IsRevealed;
+            }
+
+            ApplyRevealContentState();
+        }
+
+        private void ApplyRevealContentState()
+        {
+            if (_revealContent != null)
+            {
+                _revealContent.SetActive(IsRevealed);
             }
         }
     }

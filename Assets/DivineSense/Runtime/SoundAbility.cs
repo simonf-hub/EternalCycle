@@ -19,11 +19,11 @@ namespace DivineSense
             Vector2 origin = p.Endpoint;
             float radius = p.Settings.SoundRadius;
             ShowWave(origin, radius);
-            foreach (var wall in FindObjectsByType<MicroSense.BreakablePlatform>(FindObjectsSortMode.None))
+            foreach (var platform in FindObjectsByType<MicroSense.BreakablePlatform>(FindObjectsSortMode.None))
             {
-                var collider = wall.GetComponent<Collider2D>();
-                if (!wall.IsBroken && collider && Vector2.Distance(origin, collider.ClosestPoint(origin)) <= radius)
-                    wall.Break();
+                var collider = platform.GetComponent<Collider2D>();
+                if (!platform.IsBroken && collider && Vector2.Distance(origin, collider.ClosestPoint(origin)) <= radius)
+                    platform.Break();
             }
 
             var target = p.Registry.Opponent(p);
