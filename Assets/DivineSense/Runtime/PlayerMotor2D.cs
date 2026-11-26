@@ -1,26 +1,26 @@
+using System;
 using UnityEngine;
 namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
  public PlayerContext Owner; public Rigidbody2D Body; public BoxCollider2D Collider;
  public Transform BodyVisual; public GlideAbility Glide; public DoubleJumpAbility DoubleJump;
+ internal event Action DashStepped, Teleported;
  public bool Grounded {get;private set;} bool extraUsed,jumpUsed; float impulse; Vector2 queued;
  readonly ContactPoint2D[] contacts=new ContactPoint2D[16]; float size=1;
  Vector2 baseColliderSize;
  Vector3 baseVisualScale;
+ bool stareLocked;
+ RigidbodyConstraints2D constraintsBeforeStare;
  void Awake(){baseColliderSize=Collider.size;baseVisualScale=BodyVisual.localScale;}
  public void Begin(){Glide.ResetAirUse();Body.simulated=true;Body.gravityScale=Owner.Settings.Gravity;}
  void FixedUpdate(){
  if(!Owner.CanAct){Glide.Cancel();DoubleJump.CancelDash();Owner.Input.ClearDashTaps();return;}
- if(Owner.Status.Frozen){
- // Stare blocks control, but the body keeps its velocity, gravity and contacts.
- Owner.Input.DiscardActions();
- Body.linearVelocity+=queued;queued=Vector2.zero;
- impulse=Mathf.MoveTowards(impulse,0,Owner.Settings.KnockbackDecay*Time.fixedDeltaTime);
- SetSize(Owner.Status.Grown?Owner.Settings.GrowthScale:1);
- return;
- }
  int count=Body.GetContacts(contacts); Grounded=false; float support=0;
  for(int i=0;i<count;i++) if(contacts[i].normal.y>.5f && Body.linearVelocity.y<=Owner.Settings.ScrollSpeed+.5f) {Grounded=true; support=Owner.Session.World.ScrollVelocity;}
  if(Grounded){extraUsed=false;jumpUsed=false;Glide.ResetAirUse();}
+ if(Owner.Status.Frozen){
+ Owner.Input.DiscardActions();
+ return;
+ }
  Vector2 v=Body.linearVelocity;
  bool press=Owner.Input.TakeJump();
  if(press && ((!jumpUsed&&Grounded)||DoubleJump.Allowed(Owner,extraUsed))) {
@@ -36,23 +36,43 @@ namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
  impulse=Mathf.MoveTowards(impulse,0,Owner.Settings.KnockbackDecay*Time.fixedDeltaTime);
  Glide.ApplyMotion(Owner,ref v,Grounded,Owner.Input.TakeGlideRelease()); Body.linearVelocity=v;
  SetSize(Owner.Status.Grown?Owner.Settings.GrowthScale:1);
+ if(Glide.DashedThisStep||DoubleJump.DashedThisStep)DashStepped?.Invoke();
  if(Owner.Input.TakeAbility())Owner.Abilities.TryActivateActive();
  }
- public void StopHorizontalMotion(){
- Glide.Cancel();
- DoubleJump.CancelDash();
- Body.linearVelocity=new Vector2(0,Body.linearVelocity.y);
- impulse=0;queued.x=0;
+ internal void LockHorizontalForStare()
+ {
+     float verticalVelocity = Body.linearVelocity.y;
+     if (!stareLocked)
+     {
+         stareLocked = true;
+         constraintsBeforeStare = Body.constraints;
+         Body.constraints |= RigidbodyConstraints2D.FreezePositionX;
+     }
+
+     // Cancelling the glide dash also removes its timed cutoff for upward momentum.
+     if (Glide.DashedThisStep) verticalVelocity = Mathf.Min(0f, verticalVelocity);
+     Body.linearVelocity = new Vector2(0f, verticalVelocity);
+     Body.angularVelocity = 0f;
+     impulse = 0f;
+     queued = Vector2.zero;
  }
- public void QueueKnockback(Vector2 delta){queued+=delta;}
+ internal void ReleaseStareLock()
+ {
+     if (!stareLocked) return;
+     stareLocked = false;
+     Body.constraints = constraintsBeforeStare;
+ }
+ public void QueueKnockback(Vector2 delta)
+ {
+     if (!stareLocked) queued += delta;
+ }
  public void Teleport(Vector2 position, bool resetVelocity)
  {
      // A non-simulated body is re-created from its Transform when simulation resumes.
      // Set both poses and reset interpolation so neither can restore the death position.
      RigidbodyInterpolation2D interpolation = Body.interpolation;
      Body.interpolation = RigidbodyInterpolation2D.None;
-     transform.position = new Vector3(position.x, position.y, transform.position.z);
-     Body.position = position;
+     SetBodyPosition(position);
      Body.interpolation = interpolation;
      Grounded = false;
      Glide.Cancel();
@@ -65,6 +85,12 @@ namespace DivineSense { public sealed class PlayerMotor2D : MonoBehaviour {
          queued = Vector2.zero;
          extraUsed = jumpUsed = false;
      }
+     Teleported?.Invoke();
+ }
+ void SetBodyPosition(Vector2 position)
+ {
+     transform.position = new Vector3(position.x, position.y, transform.position.z);
+     Body.position = position;
  }
  public void SetSize(float scale)
  {

@@ -54,19 +54,21 @@ namespace DivineSense
         private void Update()
         {
             if (!GeneratePlatforms || !Session.IsPlaying) return;
-            bool heaven = Session.World.CurrentMode == SceneMode.Heaven;
-            float frontier = heaven ? float.NegativeInfinity : float.PositiveInfinity;
+            float velocity = Session.World.ScrollVelocity;
+            if (velocity == 0f) return;
+
+            bool movingDown = velocity < 0f;
+            float frontier = movingDown ? float.NegativeInfinity : float.PositiveInfinity;
             for (int i = rows.Count - 1; i >= 0; i--)
             {
                 if (!rows[i].TryGetHeight(out float height)) { rows.RemoveAt(i); continue; }
-                frontier = heaven ? Mathf.Max(frontier, height) : Mathf.Min(frontier, height);
+                frontier = movingDown ? Mathf.Max(frontier, height) : Mathf.Min(frontier, height);
             }
 
             Rect bounds = Session.World.VisibleBounds;
-            float entry = heaven ? bounds.yMax + 1 : bounds.yMin - 1;
-            float gap = heaven ? entry - frontier : frontier - entry;
+            float entry = movingDown ? bounds.yMax + 1 : bounds.yMin - 1;
+            float gap = movingDown ? entry - frontier : frontier - entry;
             // On reversal, keep the existing rows and wait for real space at the new edge.
-            // At zero scroll speed the frontier never moves, so no extra rows accumulate.
             if (gap < nextRowSpacing) return;
             if (SpawnRow(entry)) nextRowSpacing = SampleSpacing();
         }

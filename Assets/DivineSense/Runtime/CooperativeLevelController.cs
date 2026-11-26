@@ -84,7 +84,7 @@ namespace DivineSense
 
             ActivateCheckpoint(first, second);
             FollowPlayers(first.Endpoint, second.Endpoint);
-            if (!ContainsBoth(Exit, first, second) || RemainingObjective() != null)
+            if (!IsAtExit(first) || !IsAtExit(second) || RemainingObjective() != null)
                 return;
 
             complete = true;
@@ -133,6 +133,15 @@ namespace DivineSense
 
         private static bool ContainsBoth(Collider2D zone, PlayerContext first, PlayerContext second) =>
             first.CanAct && second.CanAct && zone.OverlapPoint(first.Endpoint) && zone.OverlapPoint(second.Endpoint);
+
+        private bool IsAtExit(PlayerContext player)
+        {
+            if (!player.CanAct)
+                return false;
+
+            ColliderDistance2D contact = Exit.Distance(player.Motor.Collider);
+            return contact.isValid && contact.distance <= 0f;
+        }
 
         private string RemainingObjective()
         {
@@ -213,7 +222,7 @@ namespace DivineSense
         private void DrawLesson(Vector2 canvas)
         {
             Lesson lesson = CurrentLesson();
-            bool atExit = Exit.OverlapPoint(Players[0].Endpoint) || Exit.OverlapPoint(Players[1].Endpoint);
+            bool atExit = IsAtExit(Players[0]) || IsAtExit(Players[1]);
             string checkpointCue = Session.Now < checkpointNoticeUntil ? checkpointNotice : null;
             string header = checkpointCue ?? (atExit ? "Exit" : lesson?.Title);
             string instructions = atExit

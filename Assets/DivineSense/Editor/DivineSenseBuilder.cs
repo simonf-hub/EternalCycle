@@ -8,7 +8,7 @@ namespace DivineSenseEditor {
 public static class DivineSenseBuilder {
  const string Folder="Assets/DivineSense";
  static Sprite square,circle;
- static Color gold=new Color(1,.83f,.38f), red=new Color(.95f,.3f,.36f);
+ static Color gold=new Color(1,.83f,.38f);
  public static void Build(){
  Directory.CreateDirectory("Assets/Prefabs/EternalCycle/Arena");Directory.CreateDirectory(Folder+"/Settings");Directory.CreateDirectory("Assets/Scenes/Archive");
  square=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Prefabs/EternalCycle/Art/Prototype/RoundedSquare.png");circle=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Prefabs/EternalCycle/Art/Prototype/Circle.png");
@@ -56,23 +56,18 @@ public static class DivineSenseBuilder {
  var saved=PrefabUtility.SaveAsPrefabAsset(go,"Assets/Prefabs/EternalCycle/Arena/GodPickup.prefab");Object.DestroyImmediate(go);return saved;
  }
  static PlayerContext Player(int id,GameSession session,PlayerRegistry registry){
- var go=new GameObject(id==0?"Angel":"Devil");go.transform.position=new Vector3(id==0?-1.3f:1.3f,-4.25f,0);
- var p=go.AddComponent<PlayerContext>();p.Id=id;p.Session=session;p.Registry=registry;
- var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.simulated=false;rb.freezeRotation=true;rb.collisionDetectionMode=CollisionDetectionMode2D.Continuous;rb.interpolation=RigidbodyInterpolation2D.Interpolate;
- var col=go.AddComponent<BoxCollider2D>();col.size=new Vector2(.7f,1);
- var mat=new PhysicsMaterial2D("Divine frictionless"){friction=0,bounciness=0};string mp=Folder+"/Settings/PlayerPhysics.physicsMaterial2D";var existing=AssetDatabase.LoadAssetAtPath<PhysicsMaterial2D>(mp);if(!existing){AssetDatabase.CreateAsset(mat,mp);existing=mat;}else Object.DestroyImmediate(mat);col.sharedMaterial=existing;
- var visual=new GameObject("Body Visual").transform;visual.SetParent(go.transform,false);
- var color=id==0?gold:red;Visual("Body",visual,Vector3.zero,new Vector3(.7f,1,1),color,circle,10);
- Visual("Eye L",visual,new Vector3(-.13f,.15f,0),new Vector3(.09f,.12f,1),Color.white,circle,11);Visual("Eye R",visual,new Vector3(.13f,.15f,0),new Vector3(.09f,.12f,1),Color.white,circle,11);
- if(id==0){Visual("Halo",visual,new Vector3(0,.68f,0),new Vector3(.6f,.1f,1),gold,circle,12);Visual("Wing L",visual,new Vector3(-.48f,.1f,0),new Vector3(.5f,.25f,1),Color.white,circle,9);Visual("Wing R",visual,new Vector3(.48f,.1f,0),new Vector3(.5f,.25f,1),Color.white,circle,9);}else{foreach(int sign in new[]{-1,1})Visual("Horn",visual,new Vector3(sign*.22f,.5f,0),new Vector3(.13f,.35f,1),red,square,12);}
- var marker=new GameObject("Respawn Cross").transform;marker.SetParent(go.transform,false);Visual("Horizontal",marker,Vector3.zero,new Vector3(.8f,.13f,1),color,square,20);Visual("Vertical",marker,Vector3.zero,new Vector3(.13f,.8f,1),color,square,20);marker.gameObject.SetActive(false);
- p.Input=go.AddComponent<PlayerInputReader>();p.Input.Owner=p;
- p.Motor=go.AddComponent<PlayerMotor2D>();p.Motor.Owner=p;p.Motor.Body=rb;p.Motor.Collider=col;p.Motor.BodyVisual=visual;p.Motor.Glide=go.AddComponent<GlideAbility>();p.Motor.DoubleJump=go.AddComponent<DoubleJumpAbility>();
- p.Life=go.AddComponent<PlayerLifecycle>();p.Life.Owner=p;p.Score=go.AddComponent<FollowerCounter>();p.Score.Owner=p;p.Status=go.AddComponent<PlayerStatusEffects>();p.Status.Owner=p;
- p.Respawn=go.AddComponent<RespawnController>();p.Respawn.Owner=p;p.Respawn.Marker=marker;
- p.Abilities=go.AddComponent<PlayerAbilityController>();p.Abilities.Owner=p;p.Abilities.Sight=go.AddComponent<SightAbility>();p.Abilities.Sound=go.AddComponent<SoundAbility>();
- p.Visuals=go.AddComponent<PlayerVisuals>();p.Visuals.Owner=p;p.Visuals.Renderers=visual.GetComponentsInChildren<SpriteRenderer>();
- PrefabUtility.SaveAsPrefabAssetAndConnect(go,"Assets/Prefabs/EternalCycle/Arena/"+(id==0?"Angel":"Devil")+".prefab",InteractionMode.AutomatedAction);return p;
+     string path = EternalCyclePrefabOrganizer.ArenaFolder + (id == 0 ? "/Angel.prefab" : "/Devil.prefab");
+     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+     if (!prefab) throw new FileNotFoundException("Missing mortal prefab.", path);
+
+     var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+     instance.transform.position = new Vector3(id == 0 ? -1.3f : 1.3f, -4.25f, 0f);
+     var player = instance.GetComponent<PlayerContext>();
+     player.Session = session;
+     player.Registry = registry;
+     PrefabUtility.RecordPrefabInstancePropertyModifications(instance.transform);
+     PrefabUtility.RecordPrefabInstancePropertyModifications(player);
+     return player;
  }
  static GameObject Visual(string name,Transform parent,Vector3 position,Vector3 scale,Color color,Sprite sprite,int order){var go=new GameObject(name);go.transform.SetParent(parent,false);go.transform.localPosition=position;go.transform.localScale=scale;var sr=go.AddComponent<SpriteRenderer>();sr.sprite=sprite;sr.color=color;sr.sortingOrder=order;return go;}
 }

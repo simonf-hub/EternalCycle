@@ -70,9 +70,9 @@ namespace DivineSenseEditor
             Boundary("East wall", layout, 59.7f);
             Sign(movement, 4.4f, 1.15f, "MOVE  ·  JUMP", PlateColor);
 
-            var bridge = Hidden("Sight bridge", senses, 12.15f, 15.95f, .05f);
-            Surface("Far landing", senses, 16.4f, 24.25f, -.55f, 1.25f);
-            var wall = Breakable("Sound wall", senses, 21.1f, -.55f);
+            Hidden("Sight bridge", senses, 12.15f, 15.95f, .05f);
+            Surface("Far landing", senses, 15.65f, 24.25f, -.55f, 1.25f);
+            Breakable("Sound wall", senses, 21.1f, -.55f, height: 1.75f);
             Sign(senses, 10.5f, 2.4f, "SIGHT", SightColor);
             Sign(senses, 19.75f, 2.4f, "SOUND", SoundColor);
 
@@ -80,14 +80,11 @@ namespace DivineSenseEditor
             Surface("Agility practice ledge", gifts, 34.8f, 36.7f, 2.3f, .35f);
             Surface("Exit landing", destination, 50.3f, 59.4f, -.55f, 1.25f);
 
-            var athena = Gift(settings, level.Session, GodKind.Athena, gifts, 26.4f, -.55f);
-            var zeus = Gift(settings, level.Session, GodKind.Zeus, gifts, 32.6f, -.55f);
-            var hera = Gift(settings, level.Session, GodKind.Hera, gifts, 40f, -.55f);
-            var ares = Gift(settings, level.Session, GodKind.Ares, gifts, 47f, -.55f);
+            Gift(settings, level.Session, GodKind.Athena, gifts, 26.4f, -.55f);
+            Gift(settings, level.Session, GodKind.Zeus, gifts, 32.6f, -.55f);
+            Gift(settings, level.Session, GodKind.Hera, gifts, 40f, -.55f);
+            Gift(settings, level.Session, GodKind.Ares, gifts, 47f, -.55f);
 
-            level.RequiredReveals = new[] { bridge };
-            level.RequiredBreaks = new[] { wall };
-            level.RequiredGifts = new[] { athena, zeus, hera, ares };
             level.Checkpoints = new[]
             {
                 Checkpoint("Gallery checkpoint", destination, 23.5f, -.55f),
@@ -99,9 +96,9 @@ namespace DivineSenseEditor
                 Lesson(movement, -5f, 8.3f, "Move and jump",
                     "Use the left stick to move and A to jump. On keyboard, Mortal 1 uses A/D and W, and Mortal 2 uses ←/→ and ↑."),
                 Lesson(senses, 8.3f, 16.5f, "Mortal 1 · Sight",
-                    "Press B near the gap to reveal a platform and cross together. Sight also hides your partner for 1.5 seconds. Keyboard cast is S."),
+                    "Jump the gap or press B nearby to reveal a bridge. Sight also hides your partner for 1.5 seconds. Keyboard cast is S."),
                 Lesson(senses, 16.5f, 24.4f, "Mortal 2 · Sound",
-                    "Press B near the cracked wall to break it. Sound also knocks your partner away. Keyboard cast is ↓."),
+                    "Jump over the cracked wall or press B nearby to break it. Sound also knocks your partner away. Keyboard cast is ↓."),
                 Lesson(gifts, 24.4f, 29.3f, GodPickup.DisplayName(GodKind.Athena),
                     "Touch the gift to swap positions with your partner. Try it while standing apart. It also swaps respawn markers when they are in use."),
                 Lesson(gifts, 29.3f, 37f, GodPickup.DisplayName(GodKind.Zeus),
@@ -269,17 +266,17 @@ namespace DivineSenseEditor
             return instance.GetComponent<HiddenPlatform>();
         }
 
-        private static BreakablePlatform Breakable(string name, Transform parent, float x, float floor)
+        private static BreakablePlatform Breakable(string name, Transform parent, float x, float floor, float height = 4.7f)
         {
             var instance = Place(Environment + "BreakablePlatform.prefab", parent,
-                new Vector2(x, floor + 2.2f), new Vector3(1f, 4.7f, 1f), name);
+                new Vector2(x, floor + height * .5f - .15f), new Vector3(1f, height, 1f), name);
             var visual = instance.GetComponent<SpriteRenderer>();
             visual.color = SoundColor;
             PrefabUtility.RecordPrefabInstancePropertyModifications(visual);
             return instance.GetComponent<BreakablePlatform>();
         }
 
-        private static GodPickup Gift(GameSettings settings, GameSession session, GodKind kind,
+        private static void Gift(GameSettings settings, GameSession session, GodKind kind,
             Transform parent, float x, float floor)
         {
             var prefab = settings.PickupPrefabFor(kind);
@@ -290,7 +287,6 @@ namespace DivineSenseEditor
             pickup.Kind = kind;
             pickup.RefreshAppearance();
             PrefabUtility.RecordPrefabInstancePropertyModifications(pickup);
-            return pickup;
         }
 
         private static CooperativePressurePlate Plate(string name, Transform parent, float x, float floor) =>

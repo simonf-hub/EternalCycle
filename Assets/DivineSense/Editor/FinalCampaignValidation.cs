@@ -70,7 +70,7 @@ namespace DivineSenseEditor
             SessionState.SetBool(PendingKey, false);
             if (error == null)
                 Debug.Log("FINAL_CAMPAIGN_VALIDATION_OK: build order, controller guide, opening, A/left-stick/B controls, " +
-                    "tutorial objectives, Zeus transition, timed arena results, Athena transition, co-op gates and exit, replay.");
+                    "tutorial exit and gifts, Zeus transition, timed arena results, Athena transition, co-op gates and exit, replay.");
             else
                 Debug.LogException(error);
 
@@ -172,7 +172,7 @@ namespace DivineSenseEditor
                 "The first controller's A button did not jump from the tutorial floor.");
             InputSystem.QueueStateEvent(first, new GamepadState());
 
-            milestone = "tutorial authored objectives";
+            milestone = "tutorial exit";
             foreach (object step in ClearCooperativeLayout(tutorial))
                 yield return step;
 
@@ -226,6 +226,12 @@ namespace DivineSenseEditor
             GameSession replay = CheckScene("Level_0", TrialLevel.Tutorial, playing: false);
             foreach (object step in DismissControllerGuide(replay, second))
                 yield return step;
+
+            milestone = "optional tutorial gifts";
+            foreach (object step in AdvanceStory(replay, story.Opening.Count, first))
+                yield return step;
+            foreach (object step in CollectTutorialGifts(replay))
+                yield return step;
         }
 
         private static IEnumerable<object> ClearCooperativeLayout(GameSession session)
@@ -234,23 +240,23 @@ namespace DivineSenseEditor
             var first = session.Registry.Players[0];
             var second = session.Registry.Players[1];
             string sceneName = SceneManager.GetActiveScene().name;
-            FinalCampaignValidation.Require(layout && layout.Exit && layout.Checkpoints.Length > 0 &&
-                layout.RequiredReveals.Length > 0 && layout.RequiredBreaks.Length > 0,
-                $"The {sceneName} layout is missing authored objectives or recovery points.");
-            if (session.Trial == TrialLevel.Tutorial)
-                FinalCampaignValidation.Require(layout.RequiredGifts.Length == 4,
-                    "The tutorial must teach all four gifts.");
-            else
-                FinalCampaignValidation.Require(layout.RequiredGates.Length == 2,
-                    "The final cooperative level must have both paired gates.");
+            bool tutorial = session.Trial == TrialLevel.Tutorial;
+            FinalCampaignValidation.Require(layout && layout.Exit && layout.Checkpoints.Length > 0,
+                $"The {sceneName} layout is missing its exit or recovery points.");
 
-            Vector2 exit = layout.Exit.bounds.center;
-            Place(first, exit + Vector2.left * .55f);
-            Place(second, exit + Vector2.right * .55f);
-            yield return null;
-            yield return null;
-            FinalCampaignValidation.Require(session.IsPlaying,
-                $"The {sceneName} exit advanced before its objectives were cleared.");
+            Bounds exitBounds = layout.Exit.bounds;
+            Vector2 exit = exitBounds.center;
+            if (!tutorial)
+            {
+                FinalCampaignValidation.Require(layout.RequiredReveals.Length > 0 && layout.RequiredBreaks.Length > 0 &&
+                    layout.RequiredGates.Length == 2, "The final cooperative level is missing its required objectives.");
+                Place(first, exit + Vector2.left * .55f);
+                Place(second, exit + Vector2.right * .55f);
+                yield return null;
+                yield return null;
+                FinalCampaignValidation.Require(session.IsPlaying,
+                    $"The {sceneName} exit advanced before its objectives were cleared.");
+            }
 
             var checkpoint = layout.Checkpoints[0];
             Place(first, checkpoint.AngelSpawn.position);
@@ -277,20 +283,6 @@ namespace DivineSenseEditor
                 FinalCampaignValidation.Require(wall.IsBroken, $"Sound did not break {wall.name} in {sceneName}.");
             }
 
-            foreach (var gift in layout.RequiredGifts)
-            {
-                FinalCampaignValidation.Require(gift, "A tutorial gift was missing before it could be collected.");
-                string giftName = GodPickup.DisplayName(gift.Kind);
-                Place(second, (Vector2)gift.transform.position + Vector2.left * 2f);
-                Place(first, gift.transform.position);
-                for (int step = 0; step < 6 && gift; step++)
-                {
-                    yield return new WaitForFixedUpdate();
-                    yield return null;
-                }
-                FinalCampaignValidation.Require(!gift, $"The tutorial gift {giftName} did not collect on contact.");
-            }
-
             foreach (var gate in layout.RequiredGates)
             {
                 Place(first, (Vector2)gate.LowerPlate.Zone.bounds.center + Vector2.up * .17f);
@@ -307,16 +299,49 @@ namespace DivineSenseEditor
                     $"{gate.name} did not open with a different mortal on each plate.");
             }
 
-            Place(first, exit + Vector2.left * .55f);
+            Vector2 firstExitContact = new Vector2(exitBounds.min.x - .15f, exit.y);
+            Vector2 secondExitContact = new Vector2(exitBounds.max.x + .15f, exit.y);
+            Place(first, firstExitContact);
             Place(second, layout.DevilStart.position);
             yield return null;
             FinalCampaignValidation.Require(session.IsPlaying, $"The {sceneName} exit advanced with only one mortal.");
 
-            Place(second, exit + Vector2.right * .55f);
+            Place(second, secondExitContact);
+            FinalCampaignValidation.Require(!layout.Exit.OverlapPoint(first.Endpoint) &&
+                !layout.Exit.OverlapPoint(second.Endpoint) && layout.Exit.Distance(first.Motor.Collider).isOverlapped &&
+                layout.Exit.Distance(second.Motor.Collider).isOverlapped,
+                $"Both mortals must overlap the {sceneName} exit with their centers outside it for this check.");
             yield return null;
             yield return null;
             FinalCampaignValidation.Require(session.State == MatchState.Finished,
-                $"The {sceneName} exit did not advance after both mortals cleared every objective.");
+                $"The {sceneName} exit did not advance when both mortals touched it.");
+
+            if (tutorial)
+            {
+                var bridge = FindAnyObjectByType<MicroSense.HiddenPlatform>();
+                var wall = FindAnyObjectByType<MicroSense.BreakablePlatform>();
+                FinalCampaignValidation.Require(bridge && !bridge.IsRevealed && wall && !wall.IsBroken &&
+                    FindObjectsByType<GodPickup>().Length == 4,
+                    "The tutorial must finish with the bridge hidden, the wall intact, and all four gifts available.");
+            }
+        }
+
+        private static IEnumerable<object> CollectTutorialGifts(GameSession session)
+        {
+            var first = session.Registry.Players[0];
+            var second = session.Registry.Players[1];
+            foreach (var gift in FindObjectsByType<GodPickup>())
+            {
+                string giftName = GodPickup.DisplayName(gift.Kind);
+                Place(second, (Vector2)gift.transform.position + Vector2.left * 2f);
+                Place(first, gift.transform.position);
+                for (int step = 0; step < 6 && gift; step++)
+                {
+                    yield return new WaitForFixedUpdate();
+                    yield return null;
+                }
+                FinalCampaignValidation.Require(!gift, $"The tutorial gift {giftName} did not collect on contact.");
+            }
         }
 
         private static void Place(PlayerContext player, Vector2 position) =>

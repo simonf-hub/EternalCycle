@@ -8,13 +8,23 @@ namespace DivineSense { public sealed class PlayerStatusEffects : MonoBehaviour 
  float frozenUntil;
  public float FreezeRemaining=>Owner.CanAct?Mathf.Max(0,frozenUntil-Owner.Session.Now):0;
  public bool Frozen=>FreezeRemaining>0;
- public void ApplyFreeze(){
- if(!Owner.CanAct)return;
- frozenUntil=Owner.Session.Now+BombFreezeDuration;
- Owner.Motor.StopHorizontalMotion();
- Owner.Input.DiscardActions();
+ public void ApplyFreeze()
+ {
+     if (!Owner.CanAct) return;
+     frozenUntil = Owner.Session.Now + BombFreezeDuration;
+     Owner.Motor.LockHorizontalForStare();
+     Owner.Input.DiscardActions();
  }
- public void ClearFreeze(){frozenUntil=0;}
+ public void ClearFreeze()
+ {
+     frozenUntil = 0f;
+     if (Owner && Owner.Motor) Owner.Motor.ReleaseStareLock();
+ }
  public void Clear(){HiddenUntil=GrownUntil=ReversedUntil=0;ClearFreeze();}
- void OnDisable(){if(Owner&&Owner.Motor)ClearFreeze();}
+ void Update()
+ {
+     if (frozenUntil > 0f && Owner.Session.Now >= frozenUntil)
+         ClearFreeze();
+ }
+ void OnDisable() => ClearFreeze();
 } }

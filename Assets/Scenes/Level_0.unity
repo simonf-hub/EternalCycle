@@ -185,17 +185,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 139458993582908682, guid: 68eca5a3b55e0473f86e066deacc5f4a, type: 3}
   m_PrefabInstance: {fileID: 38680610}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &38680612 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1530509309503388333, guid: 68eca5a3b55e0473f86e066deacc5f4a, type: 3}
-  m_PrefabInstance: {fileID: 38680610}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98e9bce8cee4c4c6e9949442b594be4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DivineSense.GodPickup
 --- !u!1001 &128107213
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -222,7 +211,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7947830347993031418, guid: 59a5c20038d13492fbbc4840cc290f8d, type: 3}
       propertyPath: m_LocalScale.y
-      value: 4.7
+      value: 7.1434994
       objectReference: {fileID: 0}
     - target: {fileID: 7947830347993031418, guid: 59a5c20038d13492fbbc4840cc290f8d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -230,7 +219,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7947830347993031418, guid: 59a5c20038d13492fbbc4840cc290f8d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6500001
+      value: 2.8718
       objectReference: {fileID: 0}
     - target: {fileID: 7947830347993031418, guid: 59a5c20038d13492fbbc4840cc290f8d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -274,17 +263,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7947830347993031418, guid: 59a5c20038d13492fbbc4840cc290f8d, type: 3}
   m_PrefabInstance: {fileID: 128107213}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &128107215 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3469348606219988196, guid: 59a5c20038d13492fbbc4840cc290f8d, type: 3}
-  m_PrefabInstance: {fileID: 128107213}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d01905c1ef9184e58a03f966c25ca9eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MicroSense.BreakablePlatform
 --- !u!1 &190175575
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,10 +746,10 @@ MonoBehaviour:
     Instructions: "Use the left stick to move and A to jump. On keyboard, Mortal 1 uses A/D and W, and Mortal 2 uses \u2190/\u2192 and \u2191."
   - Zone: {fileID: 823139854}
     Title: "Mortal 1 \xB7 Sight"
-    Instructions: Press B near the gap to reveal a platform and cross together. Sight also hides your partner for 1.5 seconds. Keyboard cast is S.
+    Instructions: Jump the gap or press B nearby to reveal a bridge. Sight also hides your partner for 1.5 seconds. Keyboard cast is S.
   - Zone: {fileID: 1875093622}
     Title: "Mortal 2 \xB7 Sound"
-    Instructions: "Press B near the cracked wall to break it. Sound also knocks your partner away. Keyboard cast is \u2193."
+    Instructions: "Jump over the cracked wall or press B nearby to break it. Sound also knocks your partner away. Keyboard cast is \u2193."
   - Zone: {fileID: 190175577}
     Title: "Athena\u2019s Position"
     Instructions: Touch the gift to swap positions with your partner. Try it while standing apart. It also swaps respawn markers when they are in use.
@@ -787,15 +765,9 @@ MonoBehaviour:
   - Zone: {fileID: 1288453492}
     Title: Reach the exit together
     Instructions: Mortal 1 can hold A while falling to glide and release to dash upward. Mortal 2 can jump again in midair or double-tap a direction to dash.
-  RequiredReveals:
-  - {fileID: 2099896462}
-  RequiredBreaks:
-  - {fileID: 128107215}
-  RequiredGifts:
-  - {fileID: 1687239834}
-  - {fileID: 38680612}
-  - {fileID: 1414753010}
-  - {fileID: 1372701017}
+  RequiredReveals: []
+  RequiredBreaks: []
+  RequiredGifts: []
   RequiredGates: []
   ViewHeight: 5.5
   LeftLimit: {fileID: 1913400138}
@@ -1729,17 +1701,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2128040915834574040, guid: 7eb8526f21514b629fa771d42f74e310, type: 3}
   m_PrefabInstance: {fileID: 1372701015}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1372701017 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 673942202255117183, guid: 7eb8526f21514b629fa771d42f74e310, type: 3}
-  m_PrefabInstance: {fileID: 1372701015}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98e9bce8cee4c4c6e9949442b594be4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DivineSense.GodPickup
 --- !u!1 &1398222787
 GameObject:
   m_ObjectHideFlags: 0
@@ -1841,17 +1802,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2128040915834574040, guid: 3ede300014964818a189d956f5845893, type: 3}
   m_PrefabInstance: {fileID: 1414753008}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1414753010 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 673942202255117183, guid: 3ede300014964818a189d956f5845893, type: 3}
-  m_PrefabInstance: {fileID: 1414753008}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98e9bce8cee4c4c6e9949442b594be4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DivineSense.GodPickup
 --- !u!1 &1433602565
 GameObject:
   m_ObjectHideFlags: 0
@@ -2452,17 +2402,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8847560775689892015, guid: bf014c1c0cba74ed883ad6d3e1e4866d, type: 3}
   m_PrefabInstance: {fileID: 1687239832}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1687239834 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7933893982775570184, guid: bf014c1c0cba74ed883ad6d3e1e4866d, type: 3}
-  m_PrefabInstance: {fileID: 1687239832}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98e9bce8cee4c4c6e9949442b594be4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DivineSense.GodPickup
 --- !u!1001 &1748605948
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2550,7 +2489,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2549165393338740549, guid: 8e3c35f02db874515a0a336f38f320ce, type: 3}
       propertyPath: m_LocalScale.x
-      value: 7.8500004
+      value: 8.6
       objectReference: {fileID: 0}
     - target: {fileID: 2549165393338740549, guid: 8e3c35f02db874515a0a336f38f320ce, type: 3}
       propertyPath: m_LocalScale.y
@@ -2558,7 +2497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2549165393338740549, guid: 8e3c35f02db874515a0a336f38f320ce, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20.325
+      value: 19.95
       objectReference: {fileID: 0}
     - target: {fileID: 2549165393338740549, guid: 8e3c35f02db874515a0a336f38f320ce, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3142,17 +3081,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6079801456859848288, guid: b568e1b527d0543efa3414f3b8f5a202, type: 3}
   m_PrefabInstance: {fileID: 2099896460}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2099896462 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8351732729742492494, guid: b568e1b527d0543efa3414f3b8f5a202, type: 3}
-  m_PrefabInstance: {fileID: 2099896460}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46772f50125bc4c868c2ebc4128e94cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MicroSense.HiddenPlatform
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

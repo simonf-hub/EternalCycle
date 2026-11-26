@@ -54,19 +54,6 @@ namespace DivineSense { public sealed class HUDController : MonoBehaviour {
      ?"Collect more followers than your opponent":Gods.Cue;
  GUI.Label(new Rect(0,733,1280,26),objective,text);
  GUI.Label(new Rect(0,765,1280,25),$"Mortal 1  A/D move · W jump · S cast    |    Mortal 2  ←/→ move · ↑ jump · ↓ cast    |    {controls}",small);
- if(Session.IsPlaying){
- foreach(var p in Session.Registry.Players){
- if(!p.Status.Frozen)continue;
- Vector3 point=Session.World.Camera.WorldToScreenPoint(new Vector3(p.Endpoint.x,p.Motor.Collider.bounds.max.y+.6f,0));
- if(point.z<=0)continue;
- float x=point.x/Screen.width*1280f,y=(1-point.y/Screen.height)*800f;
- GUI.color=Color.black;
- GUI.Label(new Rect(x-60+2,y-22+2,120,44),Mathf.CeilToInt(p.Status.FreezeRemaining).ToString(),title);
- GUI.color=new Color(.4f,.9f,1f);
- GUI.Label(new Rect(x-60,y-22,120,44),Mathf.CeilToInt(p.Status.FreezeRemaining).ToString(),title);
- GUI.color=Color.white;
- }
- }
  if(Session.Trial==TrialLevel.Prototype && Session.State==MatchState.Setup){
  GUI.Label(new Rect(40,150,1200,35),LocalGamepads.Status,small);
  GUI.Box(new Rect(270,200,740,470),"");

@@ -7,6 +7,8 @@ namespace DivineSense
         private float dashRemaining;
         private float dashVelocity;
 
+        internal bool DashedThisStep { get; private set; }
+
         public bool Allowed(PlayerContext player, bool used) =>
             !used && player.EquippedLoadout.MovementKind == MovementKind.Taste;
 
@@ -36,7 +38,8 @@ namespace DivineSense
                 int direction = player.Status.Reversed ? -tapDirection : tapDirection;
                 dashVelocity = direction * player.Settings.TasteDashDistance / dashRemaining;
             }
-            if (dashRemaining <= 0)
+            DashedThisStep = dashRemaining > 0;
+            if (!DashedThisStep)
                 return walkingVelocity;
 
             // Keep the configured distance independent of the physics timestep.
@@ -45,6 +48,10 @@ namespace DivineSense
             return (dashVelocity * step + walkingVelocity * (Time.fixedDeltaTime - step)) / Time.fixedDeltaTime;
         }
 
-        public void CancelDash() => dashRemaining = 0;
+        public void CancelDash()
+        {
+            dashRemaining = 0;
+            DashedThisStep = false;
+        }
     }
 }

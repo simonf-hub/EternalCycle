@@ -20,6 +20,9 @@ namespace DivineSense
 
         public bool Dashing => dashRemaining > 0;
 
+        // The final physics step still moves the player after the timer reaches zero.
+        internal bool DashedThisStep => dashDistance > 0f && (Dashing || finishUpwardDash);
+
         public float Limit(PlayerContext player, float velocity) =>
             player.EquippedLoadout.MovementKind == MovementKind.Touch && player.Input.Held && velocity < 0
                 ? Mathf.Max(velocity, -player.Settings.GlideSpeed) : velocity;
