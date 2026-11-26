@@ -41,6 +41,7 @@ namespace DivineSenseEditor {
 
         private const string LevelOnePendingKey = "PlatformGenerationValidation.LevelOne";
         private const string LevelOne = "Level_1";
+        private static readonly Color SoundLandingColor = new Color(.26f, .83f, 1f);
         private static readonly (int seed, float aspect)[] ArenaCases =
         {
             (461, 16f / 9f), (1203, 4f / 3f), (9322, 16f / 9f)
@@ -58,6 +59,7 @@ namespace DivineSenseEditor {
         private static readonly HashSet<HiddenPlatform> SeenHidden = new HashSet<HiddenPlatform>();
         private static readonly HashSet<BreakablePlatform> SeenSoundDecks = new HashSet<BreakablePlatform>();
         private static readonly HashSet<PlatformScroller> SeenSupports = new HashSet<PlatformScroller>();
+        private static Color startingDaisColor;
         private static PlatformScroller openingPlatform;
         private static Vector2 firstOpeningPlatformPosition;
 
@@ -108,6 +110,11 @@ namespace DivineSenseEditor {
                 if (opening)
                 {
                     loading = false;
+                    var startingDais = Array.Find(platforms, platform => platform.name == "Starting Dais");
+                    Check(startingDais, "Level_1 needs its Starting Dais");
+                    var daisSprite = startingDais.GetComponent<SpriteRenderer>();
+                    Check(daisSprite && daisSprite.enabled, "The Starting Dais needs a visible sprite");
+                    startingDaisColor = daisSprite.color;
                     SeenHidden.Clear();
                     SeenSoundDecks.Clear();
                     SeenSupports.Clear();
@@ -223,9 +230,9 @@ namespace DivineSenseEditor {
 
                 if (firstObservation && platform.name != "Starting Dais")
                 {
-                    Color color = platform.GetComponent<SpriteRenderer>().color;
-                    Check(color.r > color.g && color.g > color.b && color.g > .65f,
-                        "The steady route needs visibly gold landings");
+                    var sprite = platform.GetComponent<SpriteRenderer>();
+                    Check(sprite && sprite.enabled && sprite.color == startingDaisColor,
+                        "Steady landings must match the Starting Dais color");
                 }
             }
 
@@ -282,7 +289,7 @@ namespace DivineSenseEditor {
                 if (anchor < 0 && (option.center.y < visible.yMin - 1f || option.center.y > visible.yMax + 1f))
                     continue;
                 Check(anchor >= 0 && option.size.x <= 2.21f && occupiedRows.Add(anchor),
-                    $"Sound decks must be single, narrow options next to a gold landing. Found one at {option.center:F2}.");
+                    $"Sound decks must be single, narrow options next to a steady landing. Found one at {option.center:F2}.");
             }
         }
 
@@ -306,7 +313,7 @@ namespace DivineSenseEditor {
                 if (soundDeck && SeenSoundDecks.Add(soundDeck))
                 {
                     var sprite = platform.GetComponent<SpriteRenderer>();
-                    Color color = sprite.color;
+                    var crack = platform.transform.Find("Crack_1")?.GetComponent<SpriteRenderer>();
                     var soundFollower = soundDeck.GetComponentInChildren<FollowerCollectible>();
                     Check(bounds.size.x > bounds.size.y * 2f &&
                         platform.TryGetComponent<PlatformEffector2D>(out var effector) &&
@@ -314,15 +321,17 @@ namespace DivineSenseEditor {
                         "Level_1 must generate horizontal one-way Sound platforms");
                     Check(platform.Session == arena && platform.Body && platform.Body.bodyType == RigidbodyType2D.Kinematic &&
                         !soundDeck.IsBroken && collider.enabled && !collider.isTrigger && sprite.enabled &&
-                        color.g > color.r && color.b > color.r,
-                        "A generated Sound platform must start as a visible cyan landing that scrolls with the arena");
+                        sprite.color == SoundLandingColor,
+                        "A generated Sound platform must retain its bright cyan color and scroll with the arena");
+                    Check(crack && crack.sprite && crack.enabled && crack.gameObject.activeInHierarchy && crack.color.a > 0f,
+                        "A Sound platform needs a visible crack to distinguish it from the steady route");
                     Check(!soundFollower || soundFollower.Session == arena, "A Sound follower must use the arena session");
                     soundDeck.Break();
-                    Check(soundDeck.IsBroken && !collider.enabled && !sprite.enabled &&
+                    Check(soundDeck.IsBroken && !collider.enabled && !sprite.enabled && !crack.enabled &&
                         (!soundFollower || !soundFollower.gameObject.activeInHierarchy),
                         "Breaking a generated Sound platform must remove the deck and its follower");
                     soundDeck.ResetPlatform();
-                    Check(!soundDeck.IsBroken && collider.enabled && sprite.enabled &&
+                    Check(!soundDeck.IsBroken && collider.enabled && sprite.enabled && crack.enabled &&
                         (!soundFollower || soundFollower.gameObject.activeInHierarchy), "Reset did not restore the Sound platform");
                     RecordFixtureDirection();
                 }

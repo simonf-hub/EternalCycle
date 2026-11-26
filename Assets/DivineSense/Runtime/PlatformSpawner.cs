@@ -27,7 +27,6 @@ namespace DivineSense
         private const float OuterHorizontalJitter = 1.7f;
         private const float MissingOuterLaneChance = .4f;
         private const float MiddleBranchWidth = 2.2f;
-        private static readonly Color StableRouteColor = new Color(1f, .83f, .42f);
         private int rowsSinceHidden = MaxRowsWithoutObstacle;
         private int rowsSinceSoundPlatform = MaxRowsWithoutObstacle;
         private float nextRowSpacing;
@@ -215,7 +214,7 @@ namespace DivineSense
                 SpawnLane(lane);
             }
 
-            // Sound can break this optional landing alongside the gold route.
+            // Sound can break this optional landing alongside the steady route.
             if (fragileSides && !isDaisRow && lanes > 1 && soundBreakablePlatformPrefab)
             {
                 bool soundSpawned = (rowsSinceSoundPlatform >= MaxRowsWithoutObstacle || Random.value < SoundPlatformChance) &&
@@ -303,8 +302,6 @@ namespace DivineSense
             bool crumble = !stable && (UsesArenaLayout || Random.value < settings.CrumbleChance);
             var prefab = (crumble ? settings.CrumblePrefab : settings.PlatformPrefab).GetComponent<PlatformScroller>();
             var platform = SpawnScrolling(prefab, position, size);
-            if (stable)
-                platform.GetComponent<SpriteRenderer>().color = StableRouteColor;
             row.Add(platform.transform, rowHeight);
             return platform;
         }
